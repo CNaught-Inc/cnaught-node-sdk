@@ -1,1 +1,1 @@
-# cnaught-node-sdk
+# Node SDK for CNaught API
