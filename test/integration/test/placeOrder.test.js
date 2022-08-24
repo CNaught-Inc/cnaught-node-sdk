@@ -17,7 +17,7 @@ test('Can submit generic order', async () => {
     const client = clientHelper.getApiClient();
     const metadata = 'Node sdk submission';
 
-    const job = await client.placeGenericOrder( { amount_kg: 5, metadata: metadata});
+    const order = await client.placeGenericOrder( { amount_kg: 5, metadata: metadata});
 
     expect(order.state).toBe(OrderState.Placed);
     expect(order.id).not.toBeNull();
