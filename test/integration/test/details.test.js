@@ -7,6 +7,6 @@ test('Order not found', async() => {
         await client.getOrderDetails(randomString);
     } catch (error) {
         expect(error.statusCode).toEqual(404);
-        expect(error.details.title).toBe('could not find order');
+        expect(error.details.title).toBe('Could not find order');
     }
 }, 30000);

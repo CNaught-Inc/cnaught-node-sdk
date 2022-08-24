@@ -7,7 +7,7 @@
     "build": "tsc",
     "build-examples": "tsc && cd ./examples && npm install && rm -r ./node_modules/cnaught-node-sdk/src && cp -r ../dist/src ./node_modules/cnaught-node-sdk",
     "unit-test": "jest -c ./jest.config.unit.js",
-    "integration-test": "jest -c ./jest.config.integration.js && node ./test/integration/test/stream.js",
+    "integration-test": "node build_release_package_json.js && jest -c ./jest.config.integration.js",
     "lint": "eslint -c .eslintrc.js --ext .ts \".\"",
     "lint-fix": "eslint --fix -c .eslintrc.js --ext .ts \".\""
   },

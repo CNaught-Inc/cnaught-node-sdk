@@ -6,7 +6,7 @@ require('dotenv').config();
     var client = new cnaught.CNaughtApiClient(process.env.CNAUGHT_API_KEY);
 
     // submit a ride order
-    await client.SubmitRideOrder({ distance_km: 10});
+    await client.placeRideOrder({ distance_km: 10});
 
     var orders = await client.getListOfOrders(5, null);
     console.log(orders);

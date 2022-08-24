@@ -9,7 +9,7 @@ test('Cannot place order with negative amount', async () => {
         await client.placeGenericOrder({ amount_kg: -10 });
     } catch (error) {
         expect(error.statusCode).toEqual(400);
-        expect(error.details.title).toBe('could not find order');
+        expect(error.details.title).toBe("Your request parameters didn't validate");
     }
 }, 30000);
 

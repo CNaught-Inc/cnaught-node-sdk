@@ -8,6 +8,6 @@ test('Cannot authenticate with invalid api key', async () => {
     } catch (error) {
         console.log(error)
         expect(error.statusCode).toEqual(401);
-        expect(error.details.title).toBe('Authorization has been denied for this request.');
+        expect(error.details.title).toBe('Unauthorized');
     }
 }, 15000);
