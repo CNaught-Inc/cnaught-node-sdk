@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "cnaught-node-sdk": "latest",
+        "dotenv": "^16.0.1"
+    }
+}
