@@ -21,3 +21,14 @@ export class InvalidParameterError extends CNaughtError {
         this.parameters = e.response.data.parameters;
     }
 }
+
+export class InvalidStateError extends CNaughtError {
+    currentValue: string;
+    allowedValues: string[];
+
+    constructor(e: AxiosError) {
+        super(e);
+        this.currentValue = e.response.data.current_value;
+        this.allowedValues = e.response.data.allowed_values;
+    }
+}

@@ -6,6 +6,9 @@ import { RideOrderOptions } from './models/RideOrderOptions';
 import { GenericOrder } from './models/GenericOrder';
 import { RideOrder } from './models/RideOrder';
 import { List } from './models/List';
+import { GenericQuoteParams } from './models/GenericQuoteParams';
+import { RideQuoteParams } from './models/RideQuoteParams';
+import { OffsetsQuote } from './models/OffsetsQuote';
 
 /**
  * Client which handles executing CNaught API requests.
@@ -85,6 +88,28 @@ export class CNaughtApiClient {
 
         return await this.apiHandler.makeApiRequest<RideOrder>('post', '/orders/ride',
             { 'Content-Type': 'application/json' }, 'json', options);
+    }
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestQuote
+     * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
+     * @param params Params for getting a generic offsets price quote
+     * @returns The quote
+     */
+     async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
+        return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes',
+            { 'Content-Type': 'application/json' }, 'json', params);
+    }
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestRideQuote
+     * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
+     * @param params Params for getting a price quote for offsetting a vehicle ride
+     * @returns The quote
+     */
+     async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
+        return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes/ride',
+            { 'Content-Type': 'application/json' }, 'json', params);
     }
 
     protected filterNullOptions(options: {}): any {
