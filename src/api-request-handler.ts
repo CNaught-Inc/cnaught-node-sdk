@@ -42,11 +42,11 @@ export class ApiRequestHandler {
         try {
             const data = (method === 'get' || method === 'delete') ? undefined : params;
             const response = await this.instance.request({
-                method: method,
-                url: url,
-                data: data,
-                headers: headers,
-                responseType: responseType,
+                method,
+                url,
+                data,
+                headers,
+                responseType,
                 maxBodyLength
             });
 
