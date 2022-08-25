@@ -2,12 +2,15 @@ name: Build and Test
 
 on:
   push:
-    branches: [ develop, main ]
+    branches: [ main ]
   pull_request:
-    branches: [ develop, main ]
-
+    branches: [ main ]
   workflow_dispatch:
-
+    inputs:
+      run_integration_tests:
+        type: boolean
+        description: Run Integration Tests?
+        default: false
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -39,7 +42,7 @@ jobs:
     - run: npm run unit-test
 
   integration-tests:
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main' || inputs.run_integration_tests
 
     runs-on: ubuntu-latest
 
@@ -58,7 +61,6 @@ jobs:
     - run: node build_release_package_json.js
     - name: Integration tests ${{ matrix.node-version }}
       env:
-        BASE_URL: ${{ secrets.BASE_URL }}
+        API_HOSTNAME: api-sandbox.cnaught.com
         API_KEY: ${{ secrets.API_KEY }}
-        USER_EMAIL: ${{ secrets.USER_EMAIL }}
       run: npm run integration-test
