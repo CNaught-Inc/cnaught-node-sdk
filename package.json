@@ -1,5 +1,5 @@
 {
-  "name": "cnaught-node-sdk",
+  "name": "@cnaught/cnaught-node-sdk",
   "version": "1.0.0",
   "description": "CNaught Carbon Offsets API - Node SDK",
   "main": "src/index.js",
@@ -17,7 +17,10 @@
   },
   "keywords": [
     "CNaught",
-    "Carbon Offsets"
+    "carbon offset",
+    "carbon neutral",
+    "carbon removal",
+    "sustainability"
   ],
   "author": "CNaught, Inc (https://www.cnaught.com)",
   "contributors": [

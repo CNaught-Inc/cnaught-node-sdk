@@ -12,11 +12,11 @@ Examples can be found in the [`examples/`](https://github.com/cnaught-inc/cnaugh
 
 To install the package, run:
 
-    npm install cnaught-node-sdk
+    npm install @cnaught/cnaught-node-sdk 
 
 ## Support
 
-We support Node 8, 10, 12, 14, 16 and 17.
+We support Node 12+
 
 ## Usage
 
@@ -25,7 +25,7 @@ your [API Keys Page](https://app.cnaught.com/apikeys). Create a client with the
 given API Key:
 
 ```javascript
-import { CNaughtApiClient } from 'cnaught-node-sdk';
+import { CNaughtApiClient } from '@cnaught/cnaught-node-sdk';
 
 // Initialize your client with your CNaught API key
 const apiKey = "Your API Key";

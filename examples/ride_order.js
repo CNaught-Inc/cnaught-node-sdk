@@ -1,4 +1,4 @@
-const cnaught = require('cnaught-node-sdk');
+const cnaught = require('@cnaught/cnaught-node-sdk');
 const inquirer = require('inquirer');
 require('dotenv').config();
 
