@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "cnaught-node-sdk": "file:../dist",
+        "dotenv": "^16.0.1",
+        "inquirer": "^8.0.0"
+    }
+}

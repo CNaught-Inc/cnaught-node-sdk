@@ -1,0 +1,54 @@
+{
+  "name": "cnaught-node-sdk",
+  "version": "1.0.0",
+  "description": "CNaught Carbon Offsets API - Node SDK",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build-examples": "tsc && cd ./examples && npm install && rm -r ./node_modules/cnaught-node-sdk/src && cp -r ../dist/src ./node_modules/cnaught-node-sdk",
+    "unit-test": "jest -c ./jest.config.unit.js",
+    "integration-test": "node build_release_package_json.js && jest -c ./jest.config.integration.js",
+    "lint": "eslint -c .eslintrc.js --ext .ts \".\"",
+    "lint-fix": "eslint --fix -c .eslintrc.js --ext .ts \".\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cnaught-inc/cnaught-node-sdk.git"
+  },
+  "keywords": [
+    "CNaught",
+    "Carbon Offsets"
+  ],
+  "author": "CNaught, Inc (https://www.cnaught.com)",
+  "contributors": [
+    "Dan Kokotov <dkokotov@gmail.com>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cnaught-inc/cnaught-node-sdk/issues"
+  },
+  "homepage": "https://github.com/cnaught-inc/cnaught-node-sdk#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "src": "^1.1.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.13",
+    "@types/node": "^12.20.55",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "dotenv": "^16.0.1",
+    "eslint": "^8.18.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^28.1.3",
+    "ts-jest": "^28.0.8",
+    "typescript": "^4.7.4"
+  },
+  "jest": {
+    "projects": [
+      "./jest.config.unit.js",
+      "./jest.config.integration.js"
+    ]
+  }
+}
