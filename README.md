@@ -1,4 +1,4 @@
-# [CNaught Node SDK](https://docs.cnaught.com/sdk/node/) &middot; [![npm version](https://img.shields.io/npm/v/revai-node-sdk.svg?style=flat)](https://www.npmjs.com/package/revai-node-sdk) ![CI](https://github.com/cnaught-inc/cnaught-node-sdk/workflows/CI/badge.svg)
+# [CNaught Node SDK](https://docs.cnaught.com/sdk/node/) &middot; [![npm version](https://img.shields.io/npm/v/cnaught-node-sdk.svg?style=flat)](https://www.npmjs.com/package/cnaught-node-sdk) ![CI](https://github.com/cnaught-inc/cnaught-node-sdk/workflows/CI/badge.svg)
 
 ## Documentation
 
