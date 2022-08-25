@@ -18,7 +18,8 @@ test('Returns correct amount for generic quote', async () => {
 
     const quote = await client.getGenericQuote( { amount_kg: 10});
 
-    expect(quote.price_usd_cents).toBe(20);
+    expect(quote.amount_kg).toBe(10);
+    expect(quote.price_usd_cents).toBe(12);
 }, 30000);
 
 test('Cannot get ride quote with negative amount', async () => {
@@ -35,7 +36,8 @@ test('Cannot get ride quote with negative amount', async () => {
 test('Returns correct amount for ride quote', async () => {
     const client = clientHelper.getApiClient();
 
-    const quote = await client.getRideQuote( { distance_km: 10});
+    const quote = await client.getRideQuote( { distance_km: 30});
 
-    expect(quote.price_usd_cents).toBe(20);
+    expect(quote.amount_kg).toBe(7.674);
+    expect(quote.price_usd_cents).toBe(10);
 }, 30000);

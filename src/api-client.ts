@@ -96,7 +96,7 @@ export class CNaughtApiClient {
      * @param params Params for getting a generic offsets price quote
      * @returns The quote
      */
-     async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
+    async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes',
             { 'Content-Type': 'application/json' }, 'json', params);
     }
@@ -107,7 +107,7 @@ export class CNaughtApiClient {
      * @param params Params for getting a price quote for offsetting a vehicle ride
      * @returns The quote
      */
-     async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
+    async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes/ride',
             { 'Content-Type': 'application/json' }, 'json', params);
     }

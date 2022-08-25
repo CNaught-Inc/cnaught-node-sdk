@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { OrderState } = require('../../../src/models/OrderState');
+const { OrderType } = require('../../../src/models/OrderType');
 const clientHelper = require('../src/client-helper');
 
 test('Cannot place generic order with negative amount', async () => {
@@ -19,7 +20,7 @@ test('Can submit generic order', async () => {
     const callback = "https://www.example.com/callback";
 
     const order = await client.placeGenericOrder( { 
-        amount_kg: 5, 
+        amount_kg: 10, 
         metadata: metadata,
         notification_config: {
             url: callback
@@ -31,9 +32,9 @@ test('Can submit generic order', async () => {
     expect(order.created_on).not.toBeNull();
     expect(order.metadata).toBe(metadata);
     expect(order.callback_url).toBe(callback);
-    expect(order.amount_kg).toBe(5);
+    expect(order.amount_kg).toBe(10);
+    expect(order.price_usd_cents).toBe(12);
     expect(order.type).toBe(OrderType.Generic);
-    expect(order.price_usd_cents).toBe(20);
 }, 30000);
 
 test('Cannot place ride order with negative distance', async () => {
@@ -53,7 +54,7 @@ test('Can submit ride order', async () => {
     const callback = "https://www.example.com/callback";
 
     const order = await client.placeRideOrder( { 
-        amount_kg: 5, 
+        distance_km: 30, 
         metadata: metadata,
         notification_config: {
             url: callback
@@ -65,7 +66,7 @@ test('Can submit ride order', async () => {
     expect(order.created_on).not.toBeNull();
     expect(order.metadata).toBe(metadata);
     expect(order.callback_url).toBe(callback);
-    expect(order.amount_kg).toBe(5);
+    expect(order.amount_kg).toBe(7.674);
+    expect(order.price_usd_cents).toBe(10);
     expect(order.type).toBe(OrderType.Ride);
-    expect(order.price_usd_cents).toBe(20);
 }, 30000);

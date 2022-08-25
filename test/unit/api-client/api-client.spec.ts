@@ -2,7 +2,6 @@ import { CNaughtApiClient } from '../../../src/api-client';
 import { ApiRequestHandler } from '../../../src/api-request-handler';
 import { GenericOrderOptions } from '../../../src/models/GenericOrderOptions';
 import { RideOrderOptions } from '../../../src/models/RideOrderOptions';
-import { NotificationConfig } from '../../../src/models/NotificationConfig';
 import { GenericQuoteParams } from '../../../src/models/GenericQuoteParams';
 import { RideQuoteParams } from '../../../src/models/RideQuoteParams';
 
@@ -17,16 +16,13 @@ describe('api-client', () => {
     const orderDetails = {
         id: orderId,
         state: 'placed',
-        created_on: '2022-08-05T24:00:00.29Z'
-    };
-    const callbackUrl = 'https://www.example.com/callback';
-    const notificationConfig: NotificationConfig = {
-        url: callbackUrl,
+        created_on: '2022-08-05T24:00:00.29Z',
+        callback_url: 'https://www.example.com/callback'
     };
 
     const quote = {
         amount_kg: 20.5,
-        price_usd_cents: 10,
+        price_usd_cents: 10
     };
 
     beforeEach(() => {
@@ -114,7 +110,7 @@ describe('api-client', () => {
                 notification_config: {
                     url: 'https://www.example.com/callback'
                 },
-                amount_kg: 15  
+                amount_kg: 15
             };
 
             const order = await sut.placeGenericOrder(options);
@@ -135,7 +131,7 @@ describe('api-client', () => {
                 notification_config: {
                     url: 'https://www.example.com/callback'
                 },
-                distnace_km: 12.2  
+                distnace_km: 12.2
             };
 
             const order = await sut.placeRideOrder(options);
@@ -152,7 +148,7 @@ describe('api-client', () => {
             mockMakeApiRequest.mockResolvedValue(quote);
 
             const params: GenericQuoteParams = {
-                amount_kg: 15  
+                amount_kg: 15
             };
 
             const result = await sut.getGenericQuote(params);
