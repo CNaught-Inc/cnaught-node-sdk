@@ -10,7 +10,7 @@ See the [API docs](https://docs.cnaught.com) for more information about the API.
 
 ## Examples
 
-Examples can be found in the [`examples/`](https://github.com/cnaught-inc/cnaught-node-sdk/tree/develop/examples) directory
+Examples can be found in the [`examples/`](https://github.com/cnaught-inc/cnaught-node-sdk/tree/main/examples) directory
 
 ## Installation
 
@@ -83,10 +83,10 @@ from our [Get List of Orders](https://docs.cnaught.com/api/reference/#operation/
 
 After cloning and installing required npm modules, you should follow these practices when developing:
 
-1. Use the scripts defined in [package.json](https://github.com/cnaught-inc/cnaught-node-sdk/tree/develop/package.json) in this manner `npm run [command_name]`:
+1. Use the scripts defined in [package.json](https://github.com/cnaught-inc/cnaught-node-sdk/tree/main/package.json) in this manner `npm run [command_name]`:
     1. `lint` checks that you are not violating any code style standards. This ensures our code's style quality stays high improving readability and reducing room for errors.
-    2. `build` transpiles the Typescript into Javascript with the options specified in [tsconfig.json](https://github.com/cnaught-inc/cnaught-node-sdk/tree/develop/tsconfig.json)
-    3. `unit-test` runs our unit tests which live in the [unit test directory](https://github.com/cnaught-inc/cnaught-node-sdk/tree/develop/test/unit).
+    2. `build` transpiles the Typescript into Javascript with the options specified in [tsconfig.json](https://github.com/cnaught-inc/cnaught-node-sdk/tree/main/tsconfig.json)
+    3. `unit-test` runs our unit tests which live in the [unit test directory](https://github.com/cnaught-inc/cnaught-node-sdk/tree/main/test/unit).
     4. `build-examples` performs the same action as `build` and in addition, copies the `src` to the `node_modules` directory in `examples` such that you can test examples with local changes.
 2. Add any relevant test logic if you add or modify any features in the source code and check that the tests pass using the scripts mentioned above.
 3. Update the examples provided to illustrate any relevant changes you made, and check that they work properly with your changed local `cnaught-node-sdk`.
