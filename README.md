@@ -42,10 +42,10 @@ Once you've set up your client with your API Key, placing an Offsets Order is ea
 
 ```javascript
 // ride order
-const order = await client.submitRideOrder({ distanceKm: 10 });
+const order = await client.submitRideOrder({ distance_km: 10 });
 
 // or a generic order
-const order = await client.submitGenericOrder({ amountKg: 20 });
+const order = await client.submitGenericOrder({ amount_kg: 20 });
 ```
 
 `order` will contain all the information normally found in a successful response from our
