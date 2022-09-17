@@ -5,5 +5,5 @@ import { BaseOrderOptions } from './BaseOrderOptions';
  * See https://docs.cnaught.com/api/reference/#operation/SubmitRideOrder for more details.
  */
 export interface RideOrderOptions extends BaseOrderOptions {
-    distnace_km: number;
+    distance_km: number;
 }

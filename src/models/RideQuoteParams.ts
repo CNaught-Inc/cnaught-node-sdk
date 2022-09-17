@@ -3,5 +3,5 @@
  * See https://docs.cnaught.com/api/reference/#operation/RequestRideQuote for more details.
  */
 export interface RideQuoteParams {
-    distnace_km: number;
+    distance_km: number;
 }
