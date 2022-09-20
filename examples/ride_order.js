@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const cnaught = require('@cnaught/cnaught-node-sdk');
 const inquirer = require('inquirer');
 require('dotenv').config();
@@ -17,6 +18,13 @@ require('dotenv').config();
         filter: Number
     })).distance;
 
+    const onBehalf = (await inquirer.prompt({
+        type: 'input',
+        name: 'onBehalf',
+        message: 'Who are you buying this for?'
+    })).onBehalf;
+    const description = onBehalf !== '' ? `On behalf of ${onBehalf}` : null;
+
     console.log(`You requested offsets for a ${distance} km ride`);
 
     const quote = await client.getRideQuote({ distance_km: distance });
@@ -32,8 +40,8 @@ require('dotenv').config();
 
     // submit a ride order if confirmed
     if (shouldBuy) {
-        const order = await client.placeRideOrder({ distance_km: 10 });
-        console.log(`Order placed, with id: ${order.id}`);
+        const order = await client.placeRideOrder({ distance_km: 10, description: description });
+        console.log(`Order placed, with id: ${order.id}. View certificate at: ${order.certificate_public_url} and download at ${order.certificate_download_public_url}`);
     } else {
         console.log('Maybe next time');
     }

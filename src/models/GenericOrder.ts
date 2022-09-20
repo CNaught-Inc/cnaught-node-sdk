@@ -7,8 +7,11 @@ export interface GenericOrder {
     amount_kg: number;
     created_on: string;
     metadata?: string;
+    description?: string;
     price_usd_cents: number;
     state: OrderState;
     type: OrderType;
     callback_url?: string;
+    certificate_public_url?: string;
+    certificate_download_public_url?: string;
 }
