@@ -52,7 +52,7 @@ export class ApiRequestHandler {
 
             return response.data;
         } catch (error) {
-            if (error.response === null) {
+            if (!error.response) {
                 throw error;
             }
             switch (error.response.status) {
