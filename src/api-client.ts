@@ -91,6 +91,18 @@ export class CNaughtApiClient {
     }
 
     /**
+     * See https://docs.cnaught.com/api/reference/#operation/CancelOrder
+     * Cancels a previously placed order for offsets.
+     *
+     * @param id Id of the order to be canceled
+     * @returns Updated details of the order
+     */
+    async cancelOrder(id: string): Promise<GenericOrder> {
+        return await this.apiHandler.makeApiRequest<GenericOrder>('post', `/orders/${id}/cancel`,
+            { }, 'json');
+    }
+
+    /**
      * See https://docs.cnaught.com/api/reference/#operation/RequestQuote
      * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
      * @param params Params for getting a generic offsets price quote
