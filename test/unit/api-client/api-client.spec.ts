@@ -176,4 +176,17 @@ describe('api-client', () => {
             expect(result).toEqual(quote);
         });
     });
+
+    describe('cancelOrder', () => {
+        it('cancel order ', async () => {
+            mockMakeApiRequest.mockResolvedValue(orderDetails);
+
+            const order = await sut.cancelOrder('123');
+
+            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/123/cancel',
+                {  }, 'json');
+            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(order).toEqual(orderDetails);
+        });
+    });
 });
