@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Link Checker
-        uses: lycheeverse/lychee-action@4a5af7cd2958a2282cefbd9c10f63bdb89982d76 # https://github.com/lycheeverse/lychee-action#security-tip
+        uses: lycheeverse/lychee-action@0fcec0b45a1cc548fd8b6d9e859b1f8a2cc156ce # https://github.com/lycheeverse/lychee-action#security-tip
         with:
           args: --verbose --no-progress './**/*.md' './**/*.html' './**/*.js' './**/*.ts'
           fail: true
