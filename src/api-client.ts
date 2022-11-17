@@ -9,6 +9,7 @@ import { List } from './models/List';
 import { GenericQuoteParams } from './models/GenericQuoteParams';
 import { RideQuoteParams } from './models/RideQuoteParams';
 import { OffsetsQuote } from './models/OffsetsQuote';
+import { IdempotencyOptions } from './models/IdempotencyOptions';
 
 /**
  * Client which handles executing CNaught API requests.
@@ -65,13 +66,14 @@ export class CNaughtApiClient {
      * optional properties
      * @returns Details of the placed order
      */
-    async placeGenericOrder(options: GenericOrderOptions): Promise<GenericOrder> {
+    async placeGenericOrder(options: GenericOrderOptions, idempotencyOptions?: IdempotencyOptions):
+    Promise<GenericOrder> {
         options = this.filterNullOptions({
             ...(options || {})
         });
 
         return await this.apiHandler.makeApiRequest<GenericOrder>('post', '/orders',
-            { 'Content-Type': 'application/json' }, 'json', options);
+            this.getHeaders(idempotencyOptions), 'json', options);
     }
 
     /**
@@ -132,5 +134,13 @@ export class CNaughtApiClient {
             }
         });
         return filteredOptions;
+    }
+
+    protected getHeaders(idempotencyOptions?: IdempotencyOptions): {} {
+        const headers = { 'Content-Type': 'application/json' };
+        if (idempotencyOptions) {
+            headers['Idempotency-Key'] = idempotencyOptions.idempotencyKey;
+        }
+        return headers;
     }
 }
