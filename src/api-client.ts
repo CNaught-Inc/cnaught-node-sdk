@@ -9,6 +9,7 @@ import { List } from './models/List';
 import { GenericQuoteParams } from './models/GenericQuoteParams';
 import { RideQuoteParams } from './models/RideQuoteParams';
 import { OffsetsQuote } from './models/OffsetsQuote';
+import { RequestOptions } from './models/RequestOptions';
 
 /**
  * Client which handles executing CNaught API requests.
@@ -63,15 +64,17 @@ export class CNaughtApiClient {
      * Places an order for carbon offsets by specifying the amount of offsets (in kg) directly.
      * @param options Options for the order specifying amount of CO2 to offset, as well as other
      * optional properties
+     * @param requestOptions Optional additional request options, e.g. for specifying an idempotency key
      * @returns Details of the placed order
      */
-    async placeGenericOrder(options: GenericOrderOptions): Promise<GenericOrder> {
+    async placeGenericOrder(options: GenericOrderOptions, requestOptions?: RequestOptions):
+    Promise<GenericOrder> {
         options = this.filterNullOptions({
             ...(options || {})
         });
 
         return await this.apiHandler.makeApiRequest<GenericOrder>('post', '/orders',
-            { 'Content-Type': 'application/json' }, 'json', options);
+            this.getHeaders({ contentType: 'application/json', ...requestOptions }), 'json', options);
     }
 
     /**
@@ -79,15 +82,16 @@ export class CNaughtApiClient {
      * Places an order for offsets for a vehicle ride.
      * @param options Options for the order specifying distance of ride, as well as other
      * optional properties
+     * @param requestOptions Optional additional request options, e.g. for specifying an idempotency key
      * @returns Details of the placed order
      */
-    async placeRideOrder(options: RideOrderOptions): Promise<RideOrder> {
+    async placeRideOrder(options: RideOrderOptions, requestOptions?: RequestOptions): Promise<RideOrder> {
         options = this.filterNullOptions({
             ...(options || {})
         });
 
         return await this.apiHandler.makeApiRequest<RideOrder>('post', '/orders/ride',
-            { 'Content-Type': 'application/json' }, 'json', options);
+            this.getHeaders({ contentType: 'application/json', ...requestOptions }), 'json', options);
     }
 
     /**
@@ -95,11 +99,12 @@ export class CNaughtApiClient {
      * Cancels a previously placed order for offsets.
      *
      * @param id Id of the order to be canceled
+     * @param requestOptions Optional additional request options, e.g. for specifying an idempotency key
      * @returns Updated details of the order
      */
-    async cancelOrder(id: string): Promise<GenericOrder> {
+    async cancelOrder(id: string, requestOptions?: RequestOptions): Promise<GenericOrder> {
         return await this.apiHandler.makeApiRequest<GenericOrder>('post', `/orders/${id}/cancel`,
-            { }, 'json');
+            this.getHeaders(requestOptions), 'json');
     }
 
     /**
@@ -110,7 +115,7 @@ export class CNaughtApiClient {
      */
     async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes',
-            { 'Content-Type': 'application/json' }, 'json', params);
+            this.getHeaders({ contentType: 'application/json' }), 'json', params);
     }
 
     /**
@@ -121,7 +126,7 @@ export class CNaughtApiClient {
      */
     async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes/ride',
-            { 'Content-Type': 'application/json' }, 'json', params);
+            this.getHeaders({ contentType: 'application/json' }), 'json', params);
     }
 
     protected filterNullOptions(options: {}): any {
@@ -133,4 +138,19 @@ export class CNaughtApiClient {
         });
         return filteredOptions;
     }
+
+    protected getHeaders(requestOptions?: RequestOptions & ContentTypeOptions): {} {
+        const headers = { };
+        if (requestOptions?.idempotencyKey) {
+            headers['Idempotency-Key'] = requestOptions.idempotencyKey;
+        }
+        if (requestOptions?.contentType) {
+            headers['Content-Type'] = requestOptions.contentType;
+        }
+        return headers;
+    }
+}
+
+interface ContentTypeOptions {
+    contentType?: string;
 }

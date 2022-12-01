@@ -120,6 +120,25 @@ describe('api-client', () => {
             expect(mockMakeApiRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
+
+        it('place order with idempotency', async () => {
+            mockMakeApiRequest.mockResolvedValue(orderDetails);
+
+            const options: GenericOrderOptions = {
+                metadata: 'clientid:124',
+                notification_config: {
+                    url: 'https://www.example.com/callback'
+                },
+                amount_kg: 15
+            };
+
+            const order = await sut.placeGenericOrder(options, { idempotencyKey: 'ABCD' });
+
+            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders',
+                { 'Content-Type': 'application/json', 'Idempotency-Key': 'ABCD' }, 'json', options);
+            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(order).toEqual(orderDetails);
+        });
     });
 
     describe('placeRideOrder', () => {
@@ -131,13 +150,32 @@ describe('api-client', () => {
                 notification_config: {
                     url: 'https://www.example.com/callback'
                 },
-                distnace_km: 12.2
+                distance_km: 12.2
             };
 
             const order = await sut.placeRideOrder(options);
 
             expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/ride',
                 { 'Content-Type': 'application/json' }, 'json', options);
+            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(order).toEqual(orderDetails);
+        });
+
+        it('place ride order with idempotency', async () => {
+            mockMakeApiRequest.mockResolvedValue(orderDetails);
+
+            const options: RideOrderOptions = {
+                metadata: 'clientid:124',
+                notification_config: {
+                    url: 'https://www.example.com/callback'
+                },
+                distance_km: 15
+            };
+
+            const order = await sut.placeRideOrder(options, { idempotencyKey: 'ABCD' });
+
+            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/ride',
+                { 'Content-Type': 'application/json', 'Idempotency-Key': 'ABCD' }, 'json', options);
             expect(mockMakeApiRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
@@ -165,7 +203,7 @@ describe('api-client', () => {
             mockMakeApiRequest.mockResolvedValue(quote);
 
             const params: RideQuoteParams = {
-                distnace_km: 10
+                distance_km: 10
             };
 
             const result = await sut.getRideQuote(params);
@@ -185,6 +223,17 @@ describe('api-client', () => {
 
             expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/123/cancel',
                 {  }, 'json');
+            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(order).toEqual(orderDetails);
+        });
+
+        it('cancel order with idempotency', async () => {
+            mockMakeApiRequest.mockResolvedValue(orderDetails);
+
+            const order = await sut.cancelOrder('123', { idempotencyKey: 'ABCD' });
+
+            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/123/cancel',
+                { 'Idempotency-Key': 'ABCD' }, 'json');
             expect(mockMakeApiRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
