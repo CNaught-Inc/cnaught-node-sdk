@@ -1,7 +1,5 @@
-const configHelper = require('./config-helper');
 const cnaught = require('../../../dist/src/api-client');
-const OrderState = require('../../../dist/src/models/OrderState').OrderState;
-const OrderType = require('../../../dist/src/models/OrderType').OrderType;
+const configHelper = require('./config-helper');
 
 module.exports = {
     getApiClient: (apiKey = configHelper.getApiKey()) => {
