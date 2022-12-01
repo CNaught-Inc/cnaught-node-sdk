@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "@cnaught/cnaught-node-sdk": "^1.0.3",
+        "@cnaught/cnaught-node-sdk": "^1.1.0",
         "dotenv": "^16.0.1",
         "inquirer": "^8.0.0"
     }
