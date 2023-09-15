@@ -4,4 +4,5 @@
  */
 export interface GenericQuoteParams {
     amount_kg: number;
+    portfolio_id?: string;
 }
