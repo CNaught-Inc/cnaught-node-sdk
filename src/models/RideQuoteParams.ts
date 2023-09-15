@@ -4,4 +4,5 @@
  */
 export interface RideQuoteParams {
     distance_km: number;
+    portfolio_id?: string;
 }
