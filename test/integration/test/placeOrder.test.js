@@ -10,14 +10,14 @@ test('Cannot place generic order with negative amount', async () => {
         await client.placeGenericOrder({ amount_kg: -10 });
     } catch (error) {
         expect(error.statusCode).toEqual(400);
-        expect(error.details.title).toBe("Your request parameters didn't validate");
+        expect(error.details.title).toBe('Your request parameters didn\'t validate');
     }
 }, 30000);
 
 test('Can submit generic order', async () => {
     const client = clientHelper.getApiClient();
     const metadata = 'Node sdk submission';
-    const callback = "https://www.example.com/callback";
+    const callback = 'https://www.example.com/callback';
 
     const order = await client.placeGenericOrder( {
         amount_kg: 10,
@@ -33,14 +33,33 @@ test('Can submit generic order', async () => {
     expect(order.metadata).toBe(metadata);
     expect(order.callback_url).toBe(callback);
     expect(order.amount_kg).toBe(10);
-    expect(order.price_usd_cents).toBe(12);
+    expect(order.price_usd_cents).toBe(20);
     expect(order.type).toBe(OrderType.Generic);
 }, 30000);
+
+test('Can submit generic order with portfolio ID', async () => {
+    const client = clientHelper.getApiClient();
+    const metadata = 'Node sdk submission';
+    const callback = 'https://www.example.com/callback';
+
+    const order = await client.placeGenericOrder( {
+        amount_kg: 10,
+        metadata: metadata,
+        notification_config: {
+            url: callback
+        },
+        portfolio_id: 'XYZ' // on sandbox, portfolio ids are accepted but ignored
+    });
+
+    expect(order.state).toBe(OrderState.Placed);
+    expect(order.id).not.toBeNull();
+}, 30000);
+
 
 test('Placing generic order twice with same idempotency key returns replay', async () => {
     const client = clientHelper.getApiClient();
     const metadata = 'Node sdk submission';
-    const callback = "https://www.example.com/callback";
+    const callback = 'https://www.example.com/callback';
 
     const orderOpts =  {
         amount_kg: 10,
@@ -60,7 +79,7 @@ test('Placing generic order twice with same idempotency key returns replay', asy
 test('Placing generic order twice with same idempotency key but different payload returns error', async () => {
     const client = clientHelper.getApiClient();
     const metadata = 'Node sdk submission';
-    const callback = "https://www.example.com/callback";
+    const callback = 'https://www.example.com/callback';
 
     const orderOpts =  {
         amount_kg: 10,
@@ -70,14 +89,14 @@ test('Placing generic order twice with same idempotency key but different payloa
         }
     };
     const requestOpts = { idempotencyKey: randomUUID() };
-    const order = await client.placeGenericOrder(orderOpts, requestOpts);
+    await client.placeGenericOrder(orderOpts, requestOpts);
     orderOpts.metadata = orderOpts.metadata + ' changed';
 
     try {
         await client.placeGenericOrder(orderOpts, requestOpts);
     } catch (error) {
         expect(error.statusCode).toEqual(422);
-        expect(error.details.title).toBe("Previous request submitted with same idempotency key had different payload");
+        expect(error.details.title).toBe('Previous request submitted with same idempotency key had different payload');
     }
 }, 30000);
 
@@ -89,14 +108,14 @@ test('Cannot place ride order with negative distance', async () => {
         await client.placeRideOrder({ distnace_km: -10 });
     } catch (error) {
         expect(error.statusCode).toEqual(400);
-        expect(error.details.title).toBe("Your request parameters didn't validate");
+        expect(error.details.title).toBe('Your request parameters didn\'t validate');
     }
 }, 30000);
 
 test('Can submit ride order', async () => {
     const client = clientHelper.getApiClient();
     const metadata = 'Node sdk submission';
-    const callback = "https://www.example.com/callback";
+    const callback = 'https://www.example.com/callback';
 
     const order = await client.placeRideOrder( {
         distance_km: 30,
@@ -111,15 +130,33 @@ test('Can submit ride order', async () => {
     expect(order.created_on).not.toBeNull();
     expect(order.metadata).toBe(metadata);
     expect(order.callback_url).toBe(callback);
-    expect(order.amount_kg).toBe(7.674);
-    expect(order.price_usd_cents).toBe(10);
+    expect(order.amount_kg).toBe(7.235);
+    expect(order.price_usd_cents).toBe(14);
     expect(order.type).toBe(OrderType.Ride);
+}, 30000);
+
+test('Can submit ride order with portfolio id', async () => {
+    const client = clientHelper.getApiClient();
+    const metadata = 'Node sdk submission';
+    const callback = 'https://www.example.com/callback';
+
+    const order = await client.placeRideOrder( {
+        distance_km: 30,
+        metadata: metadata,
+        notification_config: {
+            url: callback
+        },
+        portfolio_id: 'XYZ' // on sandbox, portfolio ids are accepted but ignored
+    });
+
+    expect(order.state).toBe(OrderState.Placed);
+    expect(order.id).not.toBeNull();
 }, 30000);
 
 test('Submitting ride order twice with same idempotency key returns replay', async () => {
     const client = clientHelper.getApiClient();
     const metadata = 'Node sdk submission';
-    const callback = "https://www.example.com/callback";
+    const callback = 'https://www.example.com/callback';
 
     const orderOpts =  {
         distance_km: 10,
@@ -139,7 +176,7 @@ test('Submitting ride order twice with same idempotency key returns replay', asy
 test('Placing ride order twice with same idempotency key but different payload returns error', async () => {
     const client = clientHelper.getApiClient();
     const metadata = 'Node sdk submission';
-    const callback = "https://www.example.com/callback";
+    const callback = 'https://www.example.com/callback';
 
     const orderOpts =  {
         distance_km: 10,
@@ -149,13 +186,13 @@ test('Placing ride order twice with same idempotency key but different payload r
         }
     };
     const requestOpts = { idempotencyKey: randomUUID() };
-    const order = await client.placeRideOrder(orderOpts, requestOpts);
+    await client.placeRideOrder(orderOpts, requestOpts);
     orderOpts.metadata = orderOpts.metadata + ' changed';
 
     try {
         await client.placeRideOrder(orderOpts, requestOpts);
     } catch (error) {
         expect(error.statusCode).toEqual(422);
-        expect(error.details.title).toBe("Previous request submitted with same idempotency key had different payload");
+        expect(error.details.title).toBe('Previous request submitted with same idempotency key had different payload');
     }
 }, 30000);
