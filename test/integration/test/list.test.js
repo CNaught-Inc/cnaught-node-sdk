@@ -1,5 +1,5 @@
 const clientHelper = require('../src/client-helper');
-const GenericOrder = require('../../../dist/src/models/GenericOrder')
+const GenericOrder = require('../../../dist/src/models/GenericOrder');
 const client = clientHelper.getApiClient();
 
 beforeAll(async () => {
