@@ -5,6 +5,7 @@ import { ProjectAllocation } from './ProjectAllocation';
 /** Generic Offset order for a given amount of CO2 */
 export interface GenericOrder {
     id: string;
+    order_number: string;
     amount_kg: number;
     created_on: string;
     metadata?: string;
