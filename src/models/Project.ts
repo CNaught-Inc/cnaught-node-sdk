@@ -14,3 +14,8 @@ export interface Project {
     primary_image_url?: string;
     un_sdg_goals: number[];
 }
+
+export interface ProjectCategory {
+    id: string;
+    name: string;
+}
