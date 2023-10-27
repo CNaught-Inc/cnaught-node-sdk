@@ -7,4 +7,3 @@ export interface SubaccountRequestOptions {
      */
     subaccountId?: string;
 }
-

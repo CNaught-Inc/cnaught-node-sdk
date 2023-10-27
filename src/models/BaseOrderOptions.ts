@@ -6,4 +6,3 @@ export interface BaseOrderOptions {
     notification_config?: NotificationConfig;
     portfolio_id?: string;
 }
-

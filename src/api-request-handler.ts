@@ -2,11 +2,7 @@
 /* eslint-disable indent */
 import axios, { AxiosInstance } from 'axios';
 
-import {
-    InvalidParameterError,
-    InvalidStateError,
-    CNaughtError
-} from './models/CNaughtError';
+import { CNaughtError, InvalidParameterError, InvalidStateError } from './models/CNaughtError';
 
 export type HttpMethodTypes = 'post' | 'get' | 'delete';
 export type AxiosResponseTypes = 'stream' | 'json' | 'text';
@@ -20,18 +16,18 @@ export class ApiRequestHandler {
     /** Single instance of axios which uses provided arguments for all requests */
     instance: AxiosInstance;
 
-    constructor (url: string, apiKey: string) {
+    constructor(url: string, apiKey: string) {
         this.instance = axios.create({
             baseURL: url,
             maxContentLength: Infinity,
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                Authorization: `Bearer ${apiKey}`,
                 'User-Agent': `CNaught-NodeSDK/${sdkVersion}`
             }
         });
     }
 
-    public async makeApiRequest<Response> (
+    public async makeApiRequest<Response>(
         method: HttpMethodTypes,
         url: string,
         headers: {},
@@ -40,7 +36,8 @@ export class ApiRequestHandler {
         maxBodyLength?: number
     ): Promise<Response> {
         try {
-            const data = (method === 'get' || method === 'delete') ? undefined : params;
+            const data =
+                method === 'get' || method === 'delete' ? undefined : params;
             const response = await this.instance.request({
                 method,
                 url,

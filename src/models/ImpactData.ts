@@ -9,4 +9,3 @@ export interface ImpactData {
     categories: ImpactCategoryUsage[];
     since_date: string;
 }
-

@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { ApiRequestHandler } from './api-request-handler';
-import { GenericOrderOptions } from './models';
-import { RideOrderOptions } from './models';
-import { GenericOrder } from './models';
+import { GenericOrder, GenericOrderOptions, RideOrderOptions } from './models';
 import { RideOrder } from './models/RideOrder';
 import { List } from './models/List';
 import { GenericQuoteParams } from './models/GenericQuoteParams';
@@ -26,8 +24,11 @@ export class CNaughtApiClient {
      * @param hostname (optional) the hostname of the API server to make requests against. Defaults to api.cnaught.com.
      * @param version (optional) version of the API to be used, default is v1 (current version)
      */
-    constructor (apiKey: string, hostname = 'api.cnaught.com', version = 'v1') {
-        this.apiHandler = new ApiRequestHandler(`https://${hostname}/${version}/`, apiKey);
+    constructor(apiKey: string, hostname = 'api.cnaught.com', version = 'v1') {
+        this.apiHandler = new ApiRequestHandler(
+            `https://${hostname}/${version}/`,
+            apiKey
+        );
     }
 
     /**
@@ -37,9 +38,16 @@ export class CNaughtApiClient {
      * @param requestOptions Optional additional request options, for specifying a subaccount to use
      * @returns Order details
      */
-    async getOrderDetails(id: string, requestOptions?: SubaccountRequestOptions): Promise<GenericOrder> {
-        return await this.apiHandler.makeApiRequest<GenericOrder>('get', `/orders/${id}`,
-            this.getHeaders(requestOptions), 'json');
+    async getOrderDetails(
+        id: string,
+        requestOptions?: SubaccountRequestOptions
+    ): Promise<GenericOrder> {
+        return await this.apiHandler.makeApiRequest<GenericOrder>(
+            'get',
+            `/orders/${id}`,
+            this.getHeaders(requestOptions),
+            'json'
+        );
     }
 
     /**
@@ -52,7 +60,11 @@ export class CNaughtApiClient {
      * @param requestOptions Optional additional request options, for specifying a subaccount to use
      * @returns List of order details
      */
-    async getListOfOrders(limit?: number, startingAfter?: string, requestOptions?: SubaccountRequestOptions): Promise<List<GenericOrder>> {
+    async getListOfOrders(
+        limit?: number,
+        startingAfter?: string,
+        requestOptions?: SubaccountRequestOptions
+    ): Promise<List<GenericOrder>> {
         const params = [];
         if (limit) {
             params.push(`limit=${limit}`);
@@ -62,8 +74,12 @@ export class CNaughtApiClient {
         }
 
         const query = `?${params.join('&')}`;
-        return await this.apiHandler.makeApiRequest<List<GenericOrder>>('get',
-            `/orders${params.length > 0 ? query : ''}`, this.getHeaders(requestOptions), 'json');
+        return await this.apiHandler.makeApiRequest<List<GenericOrder>>(
+            'get',
+            `/orders${params.length > 0 ? query : ''}`,
+            this.getHeaders(requestOptions),
+            'json'
+        );
     }
 
     /**
@@ -75,15 +91,24 @@ export class CNaughtApiClient {
      * or subaccount to use
      * @returns Details of the placed order
      */
-    async placeGenericOrder(options: GenericOrderOptions,
-        requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions):
-        Promise<GenericOrder> {
+    async placeGenericOrder(
+        options: GenericOrderOptions,
+        requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
+    ): Promise<GenericOrder> {
         options = this.filterNullOptions({
             ...(options || {})
         });
 
-        return await this.apiHandler.makeApiRequest<GenericOrder>('post', '/orders',
-            this.getHeaders({ contentType: 'application/json', ...requestOptions }), 'json', options);
+        return await this.apiHandler.makeApiRequest<GenericOrder>(
+            'post',
+            '/orders',
+            this.getHeaders({
+                contentType: 'application/json',
+                ...requestOptions
+            }),
+            'json',
+            options
+        );
     }
 
     /**
@@ -95,14 +120,24 @@ export class CNaughtApiClient {
      * or subaccount to use
      * @returns Details of the placed order
      */
-    async placeRideOrder(options: RideOrderOptions, requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions):
-    Promise<RideOrder> {
+    async placeRideOrder(
+        options: RideOrderOptions,
+        requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
+    ): Promise<RideOrder> {
         options = this.filterNullOptions({
             ...(options || {})
         });
 
-        return await this.apiHandler.makeApiRequest<RideOrder>('post', '/orders/ride',
-            this.getHeaders({ contentType: 'application/json', ...requestOptions }), 'json', options);
+        return await this.apiHandler.makeApiRequest<RideOrder>(
+            'post',
+            '/orders/ride',
+            this.getHeaders({
+                contentType: 'application/json',
+                ...requestOptions
+            }),
+            'json',
+            options
+        );
     }
 
     /**
@@ -114,9 +149,16 @@ export class CNaughtApiClient {
      * or subaccount to use
      * @returns Updated details of the order
      */
-    async cancelOrder(id: string, requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions): Promise<GenericOrder> {
-        return await this.apiHandler.makeApiRequest<GenericOrder>('post', `/orders/${id}/cancel`,
-            this.getHeaders(requestOptions), 'json');
+    async cancelOrder(
+        id: string,
+        requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
+    ): Promise<GenericOrder> {
+        return await this.apiHandler.makeApiRequest<GenericOrder>(
+            'post',
+            `/orders/${id}/cancel`,
+            this.getHeaders(requestOptions),
+            'json'
+        );
     }
 
     /**
@@ -126,8 +168,13 @@ export class CNaughtApiClient {
      * @returns The quote
      */
     async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
-        return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes',
-            this.getHeaders({ contentType: 'application/json' }), 'json', params);
+        return await this.apiHandler.makeApiRequest<OffsetsQuote>(
+            'post',
+            '/quotes',
+            this.getHeaders({ contentType: 'application/json' }),
+            'json',
+            params
+        );
     }
 
     /**
@@ -137,8 +184,13 @@ export class CNaughtApiClient {
      * @returns The quote
      */
     async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
-        return await this.apiHandler.makeApiRequest<OffsetsQuote>('post', '/quotes/ride',
-            this.getHeaders({ contentType: 'application/json' }), 'json', params);
+        return await this.apiHandler.makeApiRequest<OffsetsQuote>(
+            'post',
+            '/quotes/ride',
+            this.getHeaders({ contentType: 'application/json' }),
+            'json',
+            params
+        );
     }
 
     /**
@@ -148,9 +200,20 @@ export class CNaughtApiClient {
      * @param requestOptions Optional additional request options, for specifying an idempotency key
      * @returns Details of the created subaccount
      */
-    async createSubaccount(options: SubaccountOptions, requestOptions?: IdempotencyRequestOptions): Promise<Subaccount> {
-        return await this.apiHandler.makeApiRequest<Subaccount>('post', '/subaccounts',
-            this.getHeaders({ contentType: 'application/json', ...requestOptions }), 'json', options);
+    async createSubaccount(
+        options: SubaccountOptions,
+        requestOptions?: IdempotencyRequestOptions
+    ): Promise<Subaccount> {
+        return await this.apiHandler.makeApiRequest<Subaccount>(
+            'post',
+            '/subaccounts',
+            this.getHeaders({
+                contentType: 'application/json',
+                ...requestOptions
+            }),
+            'json',
+            options
+        );
     }
 
     /**
@@ -160,7 +223,12 @@ export class CNaughtApiClient {
      * @returns Subaccount details
      */
     async getSubaccountDetails(id: string): Promise<Subaccount> {
-        return await this.apiHandler.makeApiRequest<Subaccount>('get', `/subaccounts/${id}`, { }, 'json');
+        return await this.apiHandler.makeApiRequest<Subaccount>(
+            'get',
+            `/subaccounts/${id}`,
+            {},
+            'json'
+        );
     }
 
     /**
@@ -172,7 +240,10 @@ export class CNaughtApiClient {
      * @param startingAfter (optional) returns only subaccounts created after the subaccount with this id, exclusive
      * @returns List of subaccount details
      */
-    async getListOfSubaccounts(limit?: number, startingAfter?: string): Promise<List<Subaccount>> {
+    async getListOfSubaccounts(
+        limit?: number,
+        startingAfter?: string
+    ): Promise<List<Subaccount>> {
         const params = [];
         if (limit) {
             params.push(`limit=${limit}`);
@@ -182,8 +253,12 @@ export class CNaughtApiClient {
         }
 
         const query = `?${params.join('&')}`;
-        return await this.apiHandler.makeApiRequest<List<Subaccount>>('get',
-            `/subaccounts${params.length > 0 ? query : ''}`, { }, 'json');
+        return await this.apiHandler.makeApiRequest<List<Subaccount>>(
+            'get',
+            `/subaccounts${params.length > 0 ? query : ''}`,
+            {},
+            'json'
+        );
     }
 
     /**
@@ -192,9 +267,15 @@ export class CNaughtApiClient {
      * @param requestOptions Optional additional request options, for specifying a subaccount to use
      * @returns Impact data for user or subaccount
      */
-    async getImpactData(requestOptions?: SubaccountRequestOptions): Promise<ImpactData> {
-        return await this.apiHandler.makeApiRequest<ImpactData>('get', '/impact/data',
-            this.getHeaders(requestOptions), 'json');
+    async getImpactData(
+        requestOptions?: SubaccountRequestOptions
+    ): Promise<ImpactData> {
+        return await this.apiHandler.makeApiRequest<ImpactData>(
+            'get',
+            '/impact/data',
+            this.getHeaders(requestOptions),
+            'json'
+        );
     }
 
     /**
@@ -203,9 +284,15 @@ export class CNaughtApiClient {
      * @param requestOptions Optional additional request options, for specifying a subaccount to use
      * @returns Hosted impact page configuration for user or subaccount
      */
-    async getImpactHostedPageConfig(requestOptions?: SubaccountRequestOptions): Promise<ImpactHostedPageConfig> {
-        return await this.apiHandler.makeApiRequest<ImpactHostedPageConfig>('get', '/impact/hosted-page-config',
-            this.getHeaders(requestOptions), 'json');
+    async getImpactHostedPageConfig(
+        requestOptions?: SubaccountRequestOptions
+    ): Promise<ImpactHostedPageConfig> {
+        return await this.apiHandler.makeApiRequest<ImpactHostedPageConfig>(
+            'get',
+            '/impact/hosted-page-config',
+            this.getHeaders(requestOptions),
+            'json'
+        );
     }
 
     protected filterNullOptions(options: {}): any {
@@ -218,8 +305,12 @@ export class CNaughtApiClient {
         return filteredOptions;
     }
 
-    protected getHeaders(requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions & ContentTypeOptions): {} {
-        const headers = { };
+    protected getHeaders(
+        requestOptions?: IdempotencyRequestOptions &
+            SubaccountRequestOptions &
+            ContentTypeOptions
+    ): {} {
+        const headers = {};
         if (requestOptions?.idempotencyKey) {
             headers['Idempotency-Key'] = requestOptions.idempotencyKey;
         }
