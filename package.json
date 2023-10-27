@@ -8,8 +8,8 @@
     "build-examples": "tsc && cd ./examples && npm install && rm -r ./node_modules/@cnaught/cnaught-node-sdk/src && cp -r ../dist/src ./node_modules/@cnaught/cnaught-node-sdk",
     "unit-test": "jest -c ./jest.config.unit.js",
     "integration-test": "node build_release_package_json.js && jest -c ./jest.config.integration.js",
-    "lint": "eslint -c .eslintrc.js --ext .ts \".\"",
-    "lint-fix": "eslint --fix -c .eslintrc.js --ext .ts \".\""
+    "lint": "eslint -c .eslintrc_unused.js --ext .ts \\\".\\\"",
+    "lint-fix": "eslint --fix -c .eslintrc_unused.js --ext .ts \\\".\\\""
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "@types/node": "^12.20.55",
+    "eslint-config-prettier": "8.1.0",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/eslint-plugin-tslint": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
@@ -54,4 +55,4 @@
       "./jest.config.integration.js"
     ]
   }
-} 
+}
