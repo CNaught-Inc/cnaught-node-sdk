@@ -8,4 +8,3 @@ export interface IdempotencyRequestOptions {
      */
     idempotencyKey?: string;
 }
-
