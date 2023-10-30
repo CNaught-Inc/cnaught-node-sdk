@@ -2,12 +2,12 @@
 /* eslint-disable indent */
 import axios, { AxiosInstance } from 'axios';
 
-import { CNaughtError, InvalidParameterError, InvalidStateError } from './models/CNaughtError';
+import { CNaughtError, InvalidParameterError, InvalidStateError } from './models/CNaughtError.js';
 
 export type HttpMethodTypes = 'post' | 'get' | 'delete';
 export type AxiosResponseTypes = 'stream' | 'json' | 'text';
 
-const sdkVersion = require('../package.json').version;
+//const sdkVersion = require('../package.json').version;
 
 /**
  * This class handles creating and sending requests as well as catching common errors
@@ -22,7 +22,7 @@ export class ApiRequestHandler {
             maxContentLength: Infinity,
             headers: {
                 Authorization: `Bearer ${apiKey}`,
-                'User-Agent': `CNaught-NodeSDK/${sdkVersion}`
+                'User-Agent': `CNaught-NodeSDK/1.2`
             }
         });
     }

@@ -3,6 +3,7 @@
   "version": "1.3.0",
   "description": "CNaught Carbon Offsets API - Node SDK",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "build-examples": "tsc && cd ./examples && npm install && rm -r ./node_modules/@cnaught/cnaught-node-sdk/src && cp -r ../dist/src ./node_modules/@cnaught/cnaught-node-sdk",
@@ -32,7 +33,8 @@
   },
   "homepage": "https://github.com/cnaught-inc/cnaught-node-sdk#readme",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^1.6.0",
+    "redaxios": "^0.5.1",
     "src": "^1.1.2"
   },
   "devDependencies": {

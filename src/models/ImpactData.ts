@@ -1,5 +1,5 @@
-import { ImpactEquivalents } from './ImpactEquivalents';
-import { ImpactCategoryUsage } from './ImpactCategoryUsage';
+import { ImpactEquivalents } from './ImpactEquivalents.js';
+import { ImpactCategoryUsage } from './ImpactCategoryUsage.js';
 
 export interface ImpactData {
     name: string | null;

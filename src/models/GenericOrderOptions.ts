@@ -1,4 +1,4 @@
-import { BaseOrderOptions } from './BaseOrderOptions';
+import { BaseOrderOptions } from './BaseOrderOptions.js';
 
 /**
  * Options that can used when submitting a generic offset order

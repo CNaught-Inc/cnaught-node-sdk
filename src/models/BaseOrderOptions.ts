@@ -1,4 +1,4 @@
-import { NotificationConfig } from './NotificationConfig';
+import { NotificationConfig } from './NotificationConfig.js';
 
 export interface BaseOrderOptions {
     metadata?: string;

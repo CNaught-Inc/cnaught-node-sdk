@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { ApiRequestHandler } from './api-request-handler';
-import { GenericOrder, GenericOrderOptions, RideOrderOptions } from './models';
-import { RideOrder } from './models/RideOrder';
-import { List } from './models/List';
-import { GenericQuoteParams } from './models/GenericQuoteParams';
-import { RideQuoteParams } from './models/RideQuoteParams';
-import { OffsetsQuote } from './models/OffsetsQuote';
-import { IdempotencyRequestOptions } from './models/IdempotencyRequestOptions';
-import { SubaccountOptions } from './models/SubaccountOptions';
-import { Subaccount } from './models/Subaccount';
-import { ImpactData } from './models/ImpactData';
-import { SubaccountRequestOptions } from './models/SubaccountRequestOptions';
-import { ImpactHostedPageConfig } from './models/ImpactHostedPageConfig';
+import { ApiRequestHandler } from './api-request-handler.js';
+import { GenericOrder, GenericOrderOptions, RideOrderOptions } from './models/index.js';
+import { RideOrder } from './models/RideOrder.js';
+import { List } from './models/List.js';
+import { GenericQuoteParams } from './models/GenericQuoteParams.js';
+import { RideQuoteParams } from './models/RideQuoteParams.js';
+import { OffsetsQuote } from './models/OffsetsQuote.js';
+import { IdempotencyRequestOptions } from './models/IdempotencyRequestOptions.js';
+import { SubaccountOptions } from './models/SubaccountOptions.js';
+import { Subaccount } from './models/Subaccount.js';
+import { ImpactData } from './models/ImpactData.js';
+import { SubaccountRequestOptions } from './models/SubaccountRequestOptions.js';
+import { ImpactHostedPageConfig } from './models/ImpactHostedPageConfig.js';
 
 /**
  * Client which handles executing CNaught API requests.

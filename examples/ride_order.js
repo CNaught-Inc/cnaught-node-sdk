@@ -1,12 +1,12 @@
 /* eslint-disable max-len */
-const { randomUUID } = require('crypto');
-const cnaught = require('@cnaught/cnaught-node-sdk');
-const inquirer = require('inquirer');
-require('dotenv').config();
+import { randomUUID } from 'crypto';
+import {  CNaughtApiClient } from '@cnaught/cnaught-node-sdk';
+import inquirer from 'inquirer';
+//require('dotenv').config();
 
 (async () => {
     // Initialize your client with your CNaught API key
-    const client = new cnaught.CNaughtApiClient(process.env.CNAUGHT_API_KEY, 'api-stage.cnaught.com');
+    const client = new CNaughtApiClient(process.env.CNAUGHT_API_KEY, 'api-stage.cnaught.com');
 
     const subaccounts = await client.getListOfSubaccounts();
     let subaccountId = null;

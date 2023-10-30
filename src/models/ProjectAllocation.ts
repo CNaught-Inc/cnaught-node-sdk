@@ -1,5 +1,5 @@
-import { Project } from './Project';
-import { Retirement } from './Retirement';
+import { Project } from './Project.js';
+import { Retirement } from './Retirement.js';
 
 export interface ProjectAllocation {
     project: Project;
