@@ -6,7 +6,8 @@ import ky from 'ky';
 //import fetch from "isomorphic-unfetch";
 import { fromObject, HttpProblemExtensionMapper, ProblemObject } from 'http-problem-details-parser';
 import { ProblemDocumentExtension } from 'http-problem-details';
-import { CNaughtProblemDetails } from './models/CNaughtProblemDetails.js';
+import { CNaughtProblemDetails, invalidParametersProblemType } from './models/CNaughtProblemDetails.js';
+//import packageJson from "../package.json" assert { type: "json" };
 
 export type HttpMethodTypes = 'post' | 'get' | 'delete';
 export type AxiosResponseTypes = 'stream' | 'json' | 'text';
@@ -16,10 +17,10 @@ type KyInstance = typeof ky;
 
 const mappers: HttpProblemExtensionMapper[] = [
     {
-        type: 'https://example.net/validation-error',
+        type: invalidParametersProblemType,
         map: (object: any) =>
             new ProblemDocumentExtension({
-                'invalid-params': object['invalid-params']
+                'errors': object['errors']
             })
     }
 ]
@@ -39,7 +40,7 @@ export class ApiRequestHandler {
             prefixUrl: url,
             headers: {
                 Authorization: `Bearer ${apiKey}`,
-                'User-Agent': `CNaught-NodeSDK/v1.2`
+                'User-Agent': `CNaught-NodeSDK2/v2.0`
             },
             hooks: {
                 beforeError: [
