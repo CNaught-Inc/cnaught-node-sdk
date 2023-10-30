@@ -1,18 +1,22 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { ApiRequestHandler } from './api-request-handler.js';
 import type { CNaughtHeadersInit } from './api-request-handler.js';
-import type { GenericOrder, GenericOrderOptions, RideOrderOptions } from './models/index.js';
-import type { RideOrder } from './models/RideOrder.js';
-import type { List } from './models/List.js';
-import type { GenericQuoteParams } from './models/GenericQuoteParams.js';
-import type { RideQuoteParams } from './models/RideQuoteParams.js';
-import type { OffsetsQuote } from './models/OffsetsQuote.js';
-import type { IdempotencyRequestOptions } from './models/IdempotencyRequestOptions.js';
-import type { SubaccountOptions } from './models/SubaccountOptions.js';
-import type { Subaccount } from './models/Subaccount.js';
-import type { ImpactData } from './models/ImpactData.js';
-import type { SubaccountRequestOptions } from './models/SubaccountRequestOptions.js';
-import type { ImpactHostedPageConfig } from './models/ImpactHostedPageConfig.js';
+import { ApiRequestHandler } from './api-request-handler.js';
+import type {
+    List,
+    GenericOrder,
+    GenericOrderOptions,
+    RideOrderOptions,
+    RideOrder,
+    GenericQuoteParams,
+    RideQuoteParams,
+    OffsetsQuote,
+    IdempotencyRequestOptions,
+    SubaccountOptions,
+    SubaccountRequestOptions,
+    Subaccount,
+    ImpactData,
+    ImpactHostedPageConfig
+} from './models/index.js';
 
 /**
  * Client which handles executing CNaught API requests.
