@@ -1,4 +1,18 @@
 /* eslint-disable @typescript-eslint/ban-types */
+import { HTTPError } from 'ky';
+import { CNaughtProblemDetails } from './CNaughtProblemDetails.js';
+
+export class CNaughtError extends HTTPError {
+    problemDetails: CNaughtProblemDetails;
+
+    constructor(e: HTTPError, problemDetails: CNaughtProblemDetails) {
+        super(e.response, e.request, e.options);
+
+        this.problemDetails = problemDetails;
+    }
+}
+
+/*
 import { AxiosError } from 'axios';
 
 export class CNaughtError {
@@ -32,3 +46,4 @@ export class InvalidStateError extends CNaughtError {
         //this.allowedValues = e.response.data.allowed_values;
     }
 }
+*/

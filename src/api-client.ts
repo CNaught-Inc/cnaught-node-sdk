@@ -44,9 +44,8 @@ export class CNaughtApiClient {
     ): Promise<GenericOrder> {
         return await this.apiHandler.makeApiRequest<GenericOrder>(
             'get',
-            `/orders/${id}`,
-            this.getHeaders(requestOptions),
-            'json'
+            `orders/${id}`,
+            this.getHeaders(requestOptions)
         );
     }
 
@@ -76,9 +75,8 @@ export class CNaughtApiClient {
         const query = `?${params.join('&')}`;
         return await this.apiHandler.makeApiRequest<List<GenericOrder>>(
             'get',
-            `/orders${params.length > 0 ? query : ''}`,
-            this.getHeaders(requestOptions),
-            'json'
+            `orders${params.length > 0 ? query : ''}`,
+            this.getHeaders(requestOptions)
         );
     }
 
@@ -101,12 +99,11 @@ export class CNaughtApiClient {
 
         return await this.apiHandler.makeApiRequest<GenericOrder>(
             'post',
-            '/orders',
+            'orders',
             this.getHeaders({
                 contentType: 'application/json',
                 ...requestOptions
             }),
-            'json',
             options
         );
     }
@@ -130,12 +127,11 @@ export class CNaughtApiClient {
 
         return await this.apiHandler.makeApiRequest<RideOrder>(
             'post',
-            '/orders/ride',
+            'orders/ride',
             this.getHeaders({
                 contentType: 'application/json',
                 ...requestOptions
             }),
-            'json',
             options
         );
     }
@@ -155,9 +151,8 @@ export class CNaughtApiClient {
     ): Promise<GenericOrder> {
         return await this.apiHandler.makeApiRequest<GenericOrder>(
             'post',
-            `/orders/${id}/cancel`,
-            this.getHeaders(requestOptions),
-            'json'
+            `orders/${id}/cancel`,
+            this.getHeaders(requestOptions)
         );
     }
 
@@ -170,9 +165,8 @@ export class CNaughtApiClient {
     async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>(
             'post',
-            '/quotes',
+            'quotes',
             this.getHeaders({ contentType: 'application/json' }),
-            'json',
             params
         );
     }
@@ -186,9 +180,8 @@ export class CNaughtApiClient {
     async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>(
             'post',
-            '/quotes/ride',
+            'quotes/ride',
             this.getHeaders({ contentType: 'application/json' }),
-            'json',
             params
         );
     }
@@ -206,12 +199,11 @@ export class CNaughtApiClient {
     ): Promise<Subaccount> {
         return await this.apiHandler.makeApiRequest<Subaccount>(
             'post',
-            '/subaccounts',
+            'subaccounts',
             this.getHeaders({
                 contentType: 'application/json',
                 ...requestOptions
             }),
-            'json',
             options
         );
     }
@@ -225,9 +217,8 @@ export class CNaughtApiClient {
     async getSubaccountDetails(id: string): Promise<Subaccount> {
         return await this.apiHandler.makeApiRequest<Subaccount>(
             'get',
-            `/subaccounts/${id}`,
-            {},
-            'json'
+            `subaccounts/${id}`,
+            {}
         );
     }
 
@@ -255,9 +246,8 @@ export class CNaughtApiClient {
         const query = `?${params.join('&')}`;
         return await this.apiHandler.makeApiRequest<List<Subaccount>>(
             'get',
-            `/subaccounts${params.length > 0 ? query : ''}`,
-            {},
-            'json'
+            `subaccounts${params.length > 0 ? query : ''}`,
+            {}
         );
     }
 
@@ -272,9 +262,8 @@ export class CNaughtApiClient {
     ): Promise<ImpactData> {
         return await this.apiHandler.makeApiRequest<ImpactData>(
             'get',
-            '/impact/data',
-            this.getHeaders(requestOptions),
-            'json'
+            'impact/data',
+            this.getHeaders(requestOptions)
         );
     }
 
@@ -289,9 +278,8 @@ export class CNaughtApiClient {
     ): Promise<ImpactHostedPageConfig> {
         return await this.apiHandler.makeApiRequest<ImpactHostedPageConfig>(
             'get',
-            '/impact/hosted-page-config',
-            this.getHeaders(requestOptions),
-            'json'
+            'impact/hosted-page-config',
+            this.getHeaders(requestOptions)
         );
     }
 
