@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { HTTPError } from 'ky';
-import { CNaughtProblemDetails } from './CNaughtProblemDetails.js';
+import type { CNaughtProblemDetails } from './CNaughtProblemDetails.js';
 
 export class CNaughtError extends HTTPError {
     problemDetails: CNaughtProblemDetails;

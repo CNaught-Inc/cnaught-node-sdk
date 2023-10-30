@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { ApiRequestHandler } from './api-request-handler.js';
-import { GenericOrder, GenericOrderOptions, RideOrderOptions } from './models/index.js';
-import { RideOrder } from './models/RideOrder.js';
-import { List } from './models/List.js';
-import { GenericQuoteParams } from './models/GenericQuoteParams.js';
-import { RideQuoteParams } from './models/RideQuoteParams.js';
-import { OffsetsQuote } from './models/OffsetsQuote.js';
-import { IdempotencyRequestOptions } from './models/IdempotencyRequestOptions.js';
-import { SubaccountOptions } from './models/SubaccountOptions.js';
-import { Subaccount } from './models/Subaccount.js';
-import { ImpactData } from './models/ImpactData.js';
-import { SubaccountRequestOptions } from './models/SubaccountRequestOptions.js';
-import { ImpactHostedPageConfig } from './models/ImpactHostedPageConfig.js';
+import type { CNaughtHeadersInit } from './api-request-handler.js';
+import type { GenericOrder, GenericOrderOptions, RideOrderOptions } from './models/index.js';
+import type { RideOrder } from './models/RideOrder.js';
+import type { List } from './models/List.js';
+import type { GenericQuoteParams } from './models/GenericQuoteParams.js';
+import type { RideQuoteParams } from './models/RideQuoteParams.js';
+import type { OffsetsQuote } from './models/OffsetsQuote.js';
+import type { IdempotencyRequestOptions } from './models/IdempotencyRequestOptions.js';
+import type { SubaccountOptions } from './models/SubaccountOptions.js';
+import type { Subaccount } from './models/Subaccount.js';
+import type { ImpactData } from './models/ImpactData.js';
+import type { SubaccountRequestOptions } from './models/SubaccountRequestOptions.js';
+import type { ImpactHostedPageConfig } from './models/ImpactHostedPageConfig.js';
 
 /**
  * Client which handles executing CNaught API requests.
@@ -93,10 +94,6 @@ export class CNaughtApiClient {
         options: GenericOrderOptions,
         requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
     ): Promise<GenericOrder> {
-        options = this.filterNullOptions({
-            ...(options || {})
-        });
-
         return await this.apiHandler.makeApiRequest<GenericOrder>(
             'post',
             'orders',
@@ -121,10 +118,6 @@ export class CNaughtApiClient {
         options: RideOrderOptions,
         requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
     ): Promise<RideOrder> {
-        options = this.filterNullOptions({
-            ...(options || {})
-        });
-
         return await this.apiHandler.makeApiRequest<RideOrder>(
             'post',
             'orders/ride',
@@ -283,22 +276,12 @@ export class CNaughtApiClient {
         );
     }
 
-    protected filterNullOptions(options: {}): any {
-        const filteredOptions: any = {};
-        Object.keys(options).forEach((option) => {
-            if (options[option] !== null && options[option] !== undefined) {
-                filteredOptions[option] = options[option];
-            }
-        });
-        return filteredOptions;
-    }
-
     protected getHeaders(
         requestOptions?: IdempotencyRequestOptions &
             SubaccountRequestOptions &
             ContentTypeOptions
-    ): {} {
-        const headers = {};
+    ): CNaughtHeadersInit {
+        const headers: CNaughtHeadersInit = {};
         if (requestOptions?.idempotencyKey) {
             headers['Idempotency-Key'] = requestOptions.idempotencyKey;
         }

@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "node16",
+    "strict": true,
+    "target": "es2022",
+    "module": "nodenext",
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
     "declaration": true,
-    "outDir": "dist/src",
+    "declarationMap": true,
+    "outDir": "dist",
     "sourceMap": true
   },
   "files": [
