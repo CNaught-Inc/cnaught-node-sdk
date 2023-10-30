@@ -35,6 +35,9 @@
   "dependencies": {
     "axios": "^1.6.0",
     "redaxios": "^0.5.1",
+    "http-problem-details-parser": "^0.0.2",
+    "isomorphic-unfetch": "^4.0.2",
+    "ky": "^1.1.2",
     "src": "^1.1.2"
   },
   "devDependencies": {
