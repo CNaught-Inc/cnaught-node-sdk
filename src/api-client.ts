@@ -18,6 +18,30 @@ import type {
     ImpactHostedPageConfig
 } from './models/index.js';
 
+export interface CNaughtApiClientOptions {
+    /**
+     * hostname of the server where api requests are made, defaults to "api.cnaught.com"
+     */
+    hostname?: string;
+    /**
+     * port on the server where api requests are made, defaults to 443
+     */
+    port?: string | number;
+
+    /**
+     * the api version to use (used to construct the URL for each API endpoint). Default and only
+     * currently legal value is 'v1'.
+     */
+    apiVersion?: string;
+
+    /**
+     * User-defined fetch function. Has to be fully compatible with the Fetch API standard.
+     * Can be used to provide a fetch function in environments where one is not globally available or where
+     * a wrapper fetch function should be used (eg NextJS).
+     */
+    fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+}
+
 /**
  * Client which handles executing CNaught API requests.
  */
@@ -26,13 +50,18 @@ export class CNaughtApiClient {
 
     /**
      * @param apiKey API Key used to authenticate API requests
-     * @param hostname (optional) the hostname of the API server to make requests against. Defaults to api.cnaught.com.
-     * @param version (optional) version of the API to be used, default is v1 (current version)
+     * @param options (optional) optional configuration for how requests are sent to the API server
      */
-    constructor(apiKey: string, hostname = 'api.cnaught.com', version = 'v1') {
+    constructor(apiKey: string, options?: CNaughtApiClientOptions) {
+        const baseUrl = new URL('https://api.cnaught.com/v1');
+        if (options?.hostname) baseUrl.hostname = options.hostname;
+        if (options?.port) baseUrl.port = options.port.toString();
+        if (options?.apiVersion) baseUrl.pathname = options.apiVersion;
+
         this.apiHandler = new ApiRequestHandler(
-            `https://${hostname}/${version}/`,
-            apiKey
+            baseUrl.toString(),
+            apiKey,
+            fetch
         );
     }
 
@@ -48,7 +77,7 @@ export class CNaughtApiClient {
         requestOptions?: SubaccountRequestOptions
     ): Promise<GenericOrder> {
         return await this.apiHandler.makeApiRequest<GenericOrder>(
-            'get',
+            'GET',
             `orders/${id}`,
             this.getHeaders(requestOptions)
         );
@@ -79,7 +108,7 @@ export class CNaughtApiClient {
 
         const query = `?${params.join('&')}`;
         return await this.apiHandler.makeApiRequest<List<GenericOrder>>(
-            'get',
+            'GET',
             `orders${params.length > 0 ? query : ''}`,
             this.getHeaders(requestOptions)
         );
@@ -99,7 +128,7 @@ export class CNaughtApiClient {
         requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
     ): Promise<GenericOrder> {
         return await this.apiHandler.makeApiRequest<GenericOrder>(
-            'post',
+            'POST',
             'orders',
             this.getHeaders({
                 contentType: 'application/json',
@@ -123,7 +152,7 @@ export class CNaughtApiClient {
         requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
     ): Promise<RideOrder> {
         return await this.apiHandler.makeApiRequest<RideOrder>(
-            'post',
+            'POST',
             'orders/ride',
             this.getHeaders({
                 contentType: 'application/json',
@@ -147,7 +176,7 @@ export class CNaughtApiClient {
         requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
     ): Promise<GenericOrder> {
         return await this.apiHandler.makeApiRequest<GenericOrder>(
-            'post',
+            'POST',
             `orders/${id}/cancel`,
             this.getHeaders(requestOptions)
         );
@@ -161,7 +190,7 @@ export class CNaughtApiClient {
      */
     async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>(
-            'post',
+            'POST',
             'quotes',
             this.getHeaders({ contentType: 'application/json' }),
             params
@@ -176,7 +205,7 @@ export class CNaughtApiClient {
      */
     async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
         return await this.apiHandler.makeApiRequest<OffsetsQuote>(
-            'post',
+            'POST',
             'quotes/ride',
             this.getHeaders({ contentType: 'application/json' }),
             params
@@ -195,7 +224,7 @@ export class CNaughtApiClient {
         requestOptions?: IdempotencyRequestOptions
     ): Promise<Subaccount> {
         return await this.apiHandler.makeApiRequest<Subaccount>(
-            'post',
+            'POST',
             'subaccounts',
             this.getHeaders({
                 contentType: 'application/json',
@@ -213,7 +242,7 @@ export class CNaughtApiClient {
      */
     async getSubaccountDetails(id: string): Promise<Subaccount> {
         return await this.apiHandler.makeApiRequest<Subaccount>(
-            'get',
+            'GET',
             `subaccounts/${id}`,
             {}
         );
@@ -242,7 +271,7 @@ export class CNaughtApiClient {
 
         const query = `?${params.join('&')}`;
         return await this.apiHandler.makeApiRequest<List<Subaccount>>(
-            'get',
+            'GET',
             `subaccounts${params.length > 0 ? query : ''}`,
             {}
         );
@@ -258,7 +287,7 @@ export class CNaughtApiClient {
         requestOptions?: SubaccountRequestOptions
     ): Promise<ImpactData> {
         return await this.apiHandler.makeApiRequest<ImpactData>(
-            'get',
+            'GET',
             'impact/data',
             this.getHeaders(requestOptions)
         );
@@ -274,7 +303,7 @@ export class CNaughtApiClient {
         requestOptions?: SubaccountRequestOptions
     ): Promise<ImpactHostedPageConfig> {
         return await this.apiHandler.makeApiRequest<ImpactHostedPageConfig>(
-            'get',
+            'GET',
             'impact/hosted-page-config',
             this.getHeaders(requestOptions)
         );
