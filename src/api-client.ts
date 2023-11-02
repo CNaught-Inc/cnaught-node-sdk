@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { CNaughtHeadersInit } from './api-request-handler.js';
 import { ApiRequestHandler } from './api-request-handler.js';
 import type {
     List,
@@ -37,9 +36,19 @@ export interface CNaughtApiClientOptions {
     /**
      * User-defined fetch function. Has to be fully compatible with the Fetch API standard.
      * Can be used to provide a fetch function in environments where one is not globally available or where
-     * a wrapper fetch function should be used (eg NextJS).
+     * a wrapper fetch function should be used (e.g. Next.js).
      */
     fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+}
+
+export interface ApiRequestOptions {
+    /**
+     * Allows changes to the Request for an API operation before it is sent to the server.
+     * Should return the updated request.
+     * Can be used to add framework specific options to the request (e.g. validation tags for Next.js).
+     * @param request the request to be sent
+     */
+    transformRequest?: (request: Request) => Request | Promise<Request>;
 }
 
 /**
@@ -69,19 +78,18 @@ export class CNaughtApiClient {
      * See https://docs.cnaught.com/api/reference/#operation/GetOrderById
      * Get details for a specific offset order
      * @param id Id of the order whose details are to be retrieved
-     * @param requestOptions Optional additional request options, for specifying a subaccount to use
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
      * @returns Order details
      */
-    async getOrderDetails(
+    getOrderDetails = (
         id: string,
-        requestOptions?: SubaccountRequestOptions
-    ): Promise<GenericOrder> {
-        return await this.apiHandler.makeApiRequest<GenericOrder>(
-            'GET',
+        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
+    ): Promise<GenericOrder> =>
+        this.apiHandler.makeApiGetRequest<GenericOrder>(
             `orders/${id}`,
-            this.getHeaders(requestOptions)
+            requestOptions
         );
-    }
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetListOfOrder
@@ -90,14 +98,15 @@ export class CNaughtApiClient {
      * the last order id from previous call into starting_after.
      * @param limit (optional) maximum number of orders to retrieve, default is 100
      * @param startingAfter (optional) returns only orders created after the order with this id, exclusive
-     * @param requestOptions Optional additional request options, for specifying a subaccount to use
-     * @returns List of order details
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
+     * * @returns List of order details
      */
-    async getListOfOrders(
+    getListOfOrders = async (
         limit?: number,
         startingAfter?: string,
-        requestOptions?: SubaccountRequestOptions
-    ): Promise<List<GenericOrder>> {
+        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
+    ): Promise<List<GenericOrder>> => {
         const params = [];
         if (limit) {
             params.push(`limit=${limit}`);
@@ -107,12 +116,11 @@ export class CNaughtApiClient {
         }
 
         const query = `?${params.join('&')}`;
-        return await this.apiHandler.makeApiRequest<List<GenericOrder>>(
-            'GET',
+        return await this.apiHandler.makeApiGetRequest<List<GenericOrder>>(
             `orders${params.length > 0 ? query : ''}`,
-            this.getHeaders(requestOptions)
+            requestOptions
         );
-    }
+    };
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/SubmitOrder
@@ -120,23 +128,19 @@ export class CNaughtApiClient {
      * @param options Options for the order specifying amount of CO2 to offset, as well as other
      * optional properties
      * @param requestOptions Optional additional request options, for specifying an idempotency key
-     * or subaccount to use
+     * or subaccount to use, or transforming the request before sending
      * @returns Details of the placed order
      */
-    async placeGenericOrder(
+    placeGenericOrder = (
         options: GenericOrderOptions,
-        requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
-    ): Promise<GenericOrder> {
-        return await this.apiHandler.makeApiRequest<GenericOrder>(
-            'POST',
-            'orders',
-            this.getHeaders({
-                contentType: 'application/json',
-                ...requestOptions
-            }),
-            options
-        );
-    }
+        requestOptions?: IdempotencyRequestOptions &
+            SubaccountRequestOptions &
+            ApiRequestOptions
+    ): Promise<GenericOrder> =>
+        this.apiHandler.makeApiPostRequest<GenericOrder>('orders', {
+            ...requestOptions,
+            data: options
+        });
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/SubmitRideOrder
@@ -144,23 +148,19 @@ export class CNaughtApiClient {
      * @param options Options for the order specifying distance of ride, as well as other
      * optional properties
      * @param requestOptions Optional additional request options, for specifying an idempotency key
-     * or subaccount to use
+     * or subaccount to use, or transforming the request before sending
      * @returns Details of the placed order
      */
-    async placeRideOrder(
+    placeRideOrder = (
         options: RideOrderOptions,
-        requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
-    ): Promise<RideOrder> {
-        return await this.apiHandler.makeApiRequest<RideOrder>(
-            'POST',
-            'orders/ride',
-            this.getHeaders({
-                contentType: 'application/json',
-                ...requestOptions
-            }),
-            options
-        );
-    }
+        requestOptions?: IdempotencyRequestOptions &
+            SubaccountRequestOptions &
+            ApiRequestOptions
+    ): Promise<RideOrder> =>
+        this.apiHandler.makeApiPostRequest<RideOrder>('orders/ride', {
+            ...requestOptions,
+            data: options
+        });
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/CancelOrder
@@ -168,85 +168,86 @@ export class CNaughtApiClient {
      *
      * @param id Id of the order to be canceled
      * @param requestOptions Optional additional request options, for specifying an idempotency key
-     * or subaccount to use
+     * or subaccount to use, or transforming the request before sending
      * @returns Updated details of the order
      */
-    async cancelOrder(
+    cancelOrder = (
         id: string,
-        requestOptions?: IdempotencyRequestOptions & SubaccountRequestOptions
-    ): Promise<GenericOrder> {
-        return await this.apiHandler.makeApiRequest<GenericOrder>(
-            'POST',
+        requestOptions?: IdempotencyRequestOptions &
+            SubaccountRequestOptions &
+            ApiRequestOptions
+    ): Promise<GenericOrder> =>
+        this.apiHandler.makeApiPostRequest<GenericOrder>(
             `orders/${id}/cancel`,
-            this.getHeaders(requestOptions)
+            requestOptions
         );
-    }
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/RequestQuote
      * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
      * @param params Params for getting a generic offsets price quote
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
      * @returns The quote
      */
-    async getGenericQuote(params: GenericQuoteParams): Promise<OffsetsQuote> {
-        return await this.apiHandler.makeApiRequest<OffsetsQuote>(
-            'POST',
-            'quotes',
-            this.getHeaders({ contentType: 'application/json' }),
-            params
-        );
-    }
+    getGenericQuote = (
+        params: GenericQuoteParams,
+        requestOptions?: ApiRequestOptions
+    ): Promise<OffsetsQuote> =>
+        this.apiHandler.makeApiPostRequest<OffsetsQuote>('quotes', {
+            ...requestOptions,
+            data: params
+        });
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/RequestRideQuote
      * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
      * @param params Params for getting a price quote for offsetting a vehicle ride
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
      * @returns The quote
      */
-    async getRideQuote(params: RideQuoteParams): Promise<OffsetsQuote> {
-        return await this.apiHandler.makeApiRequest<OffsetsQuote>(
-            'POST',
-            'quotes/ride',
-            this.getHeaders({ contentType: 'application/json' }),
-            params
-        );
-    }
+    getRideQuote = (
+        params: RideQuoteParams,
+        requestOptions?: ApiRequestOptions
+    ): Promise<OffsetsQuote> =>
+        this.apiHandler.makeApiPostRequest<OffsetsQuote>('quotes/ride', {
+            ...requestOptions,
+            data: params
+        });
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/CreateSubaccount
      * Creates a new subaccount under the user identified by the API key
      * @param options Options for the subaccount specifying name, default portfolio and other properties
-     * @param requestOptions Optional additional request options, for specifying an idempotency key
+     * @param requestOptions Optional additional request options, for specifying an idempotency key,
+     * or transforming the request before sending
      * @returns Details of the created subaccount
      */
-    async createSubaccount(
+    createSubaccount = (
         options: SubaccountOptions,
-        requestOptions?: IdempotencyRequestOptions
-    ): Promise<Subaccount> {
-        return await this.apiHandler.makeApiRequest<Subaccount>(
-            'POST',
-            'subaccounts',
-            this.getHeaders({
-                contentType: 'application/json',
-                ...requestOptions
-            }),
-            options
-        );
-    }
+        requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
+    ): Promise<Subaccount> =>
+        this.apiHandler.makeApiPostRequest<Subaccount>('subaccounts', {
+            ...requestOptions,
+            data: options
+        });
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetSubaccountById
      * Get details for a subaccount
      * @param id Id of the subaccount whose details are to be retrieved
+     * @param requestOptions Optional additional request options, e.g. for transforming the Request before sending
      * @returns Subaccount details
      */
-    async getSubaccountDetails(id: string): Promise<Subaccount> {
-        return await this.apiHandler.makeApiRequest<Subaccount>(
-            'GET',
+    getSubaccountDetails = (
+        id: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<Subaccount> =>
+        this.apiHandler.makeApiGetRequest<Subaccount>(
             `subaccounts/${id}`,
-            {}
+            requestOptions
         );
-    }
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetListOfSubaccounts
@@ -255,12 +256,14 @@ export class CNaughtApiClient {
      * the last subaccount id from previous call into starting_after.
      * @param limit (optional) maximum number of subaccounts to retrieve, default is 100
      * @param startingAfter (optional) returns only subaccounts created after the subaccount with this id, exclusive
+     * @param requestOptions Optional additional request options, e.g. for transforming the Request before sending
      * @returns List of subaccount details
      */
-    async getListOfSubaccounts(
+    getListOfSubaccounts = async (
         limit?: number,
-        startingAfter?: string
-    ): Promise<List<Subaccount>> {
+        startingAfter?: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<List<Subaccount>> => {
         const params = [];
         if (limit) {
             params.push(`limit=${limit}`);
@@ -270,64 +273,39 @@ export class CNaughtApiClient {
         }
 
         const query = `?${params.join('&')}`;
-        return await this.apiHandler.makeApiRequest<List<Subaccount>>(
-            'GET',
+        return await this.apiHandler.makeApiGetRequest<List<Subaccount>>(
             `subaccounts${params.length > 0 ? query : ''}`,
-            {}
+            requestOptions
         );
-    }
+    };
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetImpactData
      * Get the impact data for the user identified by the API key (or a subaccount of the user)
-     * @param requestOptions Optional additional request options, for specifying a subaccount to use
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
      * @returns Impact data for user or subaccount
      */
-    async getImpactData(
+    getImpactData = (
         requestOptions?: SubaccountRequestOptions
-    ): Promise<ImpactData> {
-        return await this.apiHandler.makeApiRequest<ImpactData>(
-            'GET',
+    ): Promise<ImpactData> =>
+        this.apiHandler.makeApiGetRequest<ImpactData>(
             'impact/data',
-            this.getHeaders(requestOptions)
+            requestOptions
         );
-    }
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetImpactHostedPageConfig
      * Get the configuration for the hosted impact page for the user identified by the API key (or a subaccount of the user)
-     * @param requestOptions Optional additional request options, for specifying a subaccount to use
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
      * @returns Hosted impact page configuration for user or subaccount
      */
-    async getImpactHostedPageConfig(
+    getImpactHostedPageConfig = (
         requestOptions?: SubaccountRequestOptions
-    ): Promise<ImpactHostedPageConfig> {
-        return await this.apiHandler.makeApiRequest<ImpactHostedPageConfig>(
-            'GET',
+    ): Promise<ImpactHostedPageConfig> =>
+        this.apiHandler.makeApiGetRequest<ImpactHostedPageConfig>(
             'impact/hosted-page-config',
-            this.getHeaders(requestOptions)
+            requestOptions
         );
-    }
-
-    protected getHeaders(
-        requestOptions?: IdempotencyRequestOptions &
-            SubaccountRequestOptions &
-            ContentTypeOptions
-    ): CNaughtHeadersInit {
-        const headers: CNaughtHeadersInit = {};
-        if (requestOptions?.idempotencyKey) {
-            headers['Idempotency-Key'] = requestOptions.idempotencyKey;
-        }
-        if (requestOptions?.contentType) {
-            headers['Content-Type'] = requestOptions.contentType;
-        }
-        if (requestOptions?.subaccountId) {
-            headers['X-Subaccount-Id'] = requestOptions.subaccountId;
-        }
-        return headers;
-    }
-}
-
-interface ContentTypeOptions {
-    contentType?: string;
 }

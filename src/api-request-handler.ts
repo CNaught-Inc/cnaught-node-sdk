@@ -3,7 +3,7 @@
 
 import { CNaughtError } from './models/CNaughtError.js';
 import ky from 'ky';
-//import fetch from 'isomorphic-unfetch';
+import type { BeforeRequestHook } from 'ky';
 import type {
     HttpProblemExtensionMapper,
     ProblemObject
@@ -13,6 +13,11 @@ import { ProblemDocumentExtension } from 'http-problem-details';
 import { invalidParametersProblemType } from './models/CNaughtProblemDetails.js';
 import type { CNaughtProblemDetails } from './models/CNaughtProblemDetails.js';
 import packageJson from '../package.json' assert { type: 'json' };
+import type { ApiRequestOptions } from './api-client.js';
+import type {
+    IdempotencyRequestOptions,
+    SubaccountRequestOptions
+} from './models/index.js';
 
 export type HttpMethodTypes = 'POST' | 'GET' | 'DELETE';
 type KyInstance = typeof ky;
@@ -20,6 +25,13 @@ type KyInstance = typeof ky;
 export type CNaughtHeadersInit =
     | HeadersInit
     | Record<string, string | undefined>;
+
+type InternalRequestOptions = ApiRequestOptions &
+    IdempotencyRequestOptions &
+    SubaccountRequestOptions & {
+        data?: unknown;
+        headers?: CNaughtHeadersInit;
+    };
 
 const mappers: HttpProblemExtensionMapper[] = [
     {
@@ -72,17 +84,54 @@ export class ApiRequestHandler {
         });
     }
 
-    public async makeApiRequest<Response>(
+    public makeApiRequest = async <Response>(
         method: HttpMethodTypes,
         url: string,
-        headers: CNaughtHeadersInit,
-        data: unknown | undefined = undefined
-    ): Promise<Response> {
+        requestOptions?: InternalRequestOptions
+    ): Promise<Response> => {
+        const beforeRequest: BeforeRequestHook[] =
+            requestOptions?.transformRequest
+                ? [requestOptions.transformRequest]
+                : [];
         const response = this.instance(url, {
-            body: data ? JSON.stringify(data) : undefined,
+            body: requestOptions?.data
+                ? JSON.stringify(requestOptions?.data)
+                : undefined,
             method,
-            headers
+            headers: this.getHeaders(requestOptions),
+            hooks: {
+                beforeRequest
+            }
         });
         return await response.json<Response>();
+    };
+
+    public makeApiGetRequest = <Response>(
+        url: string,
+        requestOptions?: Omit<InternalRequestOptions, 'data'>
+    ) => this.makeApiRequest<Response>('GET', url, requestOptions);
+
+    public makeApiPostRequest = <Response>(
+        url: string,
+        requestOptions?: InternalRequestOptions
+    ) => this.makeApiRequest<Response>('POST', url, requestOptions);
+
+    private getHeaders(
+        requestOptions?: InternalRequestOptions
+    ): CNaughtHeadersInit {
+        const headers: CNaughtHeadersInit = {};
+        if (requestOptions?.idempotencyKey) {
+            headers['Idempotency-Key'] = requestOptions.idempotencyKey;
+        }
+        if (requestOptions?.data) {
+            headers['Content-Type'] = 'application/json';
+        }
+        if (requestOptions?.subaccountId) {
+            headers['X-Subaccount-Id'] = requestOptions.subaccountId;
+        }
+        return {
+            ...headers,
+            ...requestOptions?.headers
+        };
     }
 }
