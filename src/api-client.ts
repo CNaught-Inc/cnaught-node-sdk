@@ -192,7 +192,7 @@ export class CNaughtApiClient {
      */
     getGenericQuote = (
         params: GenericQuoteParams,
-        requestOptions?: ApiRequestOptions
+        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<OffsetsQuote> =>
         this.apiHandler.makeApiPostRequest<OffsetsQuote>('quotes', {
             ...requestOptions,
@@ -209,7 +209,7 @@ export class CNaughtApiClient {
      */
     getRideQuote = (
         params: RideQuoteParams,
-        requestOptions?: ApiRequestOptions
+        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<OffsetsQuote> =>
         this.apiHandler.makeApiPostRequest<OffsetsQuote>('quotes/ride', {
             ...requestOptions,
