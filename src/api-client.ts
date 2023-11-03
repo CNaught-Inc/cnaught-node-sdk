@@ -70,7 +70,7 @@ export class CNaughtApiClient {
         this.apiHandler = new ApiRequestHandler(
             baseUrl.toString(),
             apiKey,
-            fetch
+            options?.fetch || fetch
         );
     }
 
