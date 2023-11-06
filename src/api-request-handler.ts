@@ -3,7 +3,6 @@
 
 import { CNaughtError } from './models/CNaughtError.js';
 import ky from 'ky';
-import type { BeforeRequestHook } from 'ky';
 import type {
     HttpProblemExtensionMapper,
     ProblemObject
@@ -89,19 +88,13 @@ export class ApiRequestHandler {
         url: string,
         requestOptions?: InternalRequestOptions
     ): Promise<Response> => {
-        const beforeRequest: BeforeRequestHook[] =
-            requestOptions?.transformRequest
-                ? [requestOptions.transformRequest]
-                : [];
         const response = this.instance(url, {
             body: requestOptions?.data
                 ? JSON.stringify(requestOptions?.data)
                 : undefined,
             method,
             headers: this.getHeaders(requestOptions),
-            hooks: {
-                beforeRequest
-            }
+            ...requestOptions?.extraRequestOptions
         });
         return await response.json<Response>();
     };

@@ -48,7 +48,7 @@ export interface ApiRequestOptions {
      * Can be used to add framework specific options to the request (e.g. validation tags for Next.js).
      * @param request the request to be sent
      */
-    transformRequest?: (request: Request) => Request | Promise<Request>;
+    extraRequestOptions?: Record<string, unknown>;
 }
 
 /**
@@ -287,7 +287,7 @@ export class CNaughtApiClient {
      * @returns Impact data for user or subaccount
      */
     getImpactData = (
-        requestOptions?: SubaccountRequestOptions
+        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<ImpactData> =>
         this.apiHandler.makeApiGetRequest<ImpactData>(
             'impact/data',
@@ -302,7 +302,7 @@ export class CNaughtApiClient {
      * @returns Hosted impact page configuration for user or subaccount
      */
     getImpactHostedPageConfig = (
-        requestOptions?: SubaccountRequestOptions
+        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<ImpactHostedPageConfig> =>
         this.apiHandler.makeApiGetRequest<ImpactHostedPageConfig>(
             'impact/hosted-page-config',
