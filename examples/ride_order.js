@@ -2,6 +2,7 @@
 import { randomUUID } from 'crypto';
 import {
     CNaughtApiClient,
+    CNaughtError,
     invalidParametersProblemType
 } from '@cnaught/cnaught-node-sdk';
 import inquirer from 'inquirer';
@@ -133,7 +134,7 @@ import 'dotenv/config';
             console.log('Maybe next time');
         }
     } catch (err) {
-        if (err.problemDetails) {
+        if (err instanceof CNaughtError) {
             switch (err.problemDetails.type) {
                 case invalidParametersProblemType:
                     console.log(

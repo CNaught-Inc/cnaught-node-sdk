@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable indent */
 
-import type { CNaughtError } from './models/CNaughtError.js';
+import { CNaughtError } from './models/CNaughtError.js';
 import wretch from 'wretch';
 import type { Wretch } from 'wretch';
 import type {
@@ -69,10 +69,7 @@ export class ApiRequestHandler {
                     problemDetailsObject,
                     mappers
                 ) as CNaughtProblemDetails;
-                throw {
-                    ...error,
-                    problemDetails
-                } satisfies CNaughtError;
+                throw new CNaughtError(error, problemDetails);
             });
     }
 
