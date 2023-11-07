@@ -1,222 +1,259 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Readable, Transform, Writable } from 'stream';
-import axios from 'axios';
+import { ApiRequestHandler } from '../../src/api-request-handler.js';
 
-import { ApiRequestHandler, AxiosResponseTypes, HttpMethodTypes } from '../../src/api-request-handler';
+import { enableFetchMocks } from 'jest-fetch-mock';
 import {
-    InvalidParameterError,
-    InvalidStateError,
-    CNaughtError
-} from '../../src/models/CNaughtError';
+    CNaughtError,
+    forbiddenProblemType,
+    invalidParametersProblemType
+} from '../../src/models/index.js';
+enableFetchMocks();
 
-import {
-    setupFakeApiError,
-    setupFakeInvalidParametersError,
-    setupFakeInvalidStateError
-} from './testhelpers';
+const version = 'v2.0.0-rc3';
 
-describe('api-request-handler', () => {
+describe('api-client', () => {
     let sut: ApiRequestHandler;
-    const baseURL = 'www.example.com';
-    const apiKey = 'APIKEY';
+
+    afterEach(() => fetchMock.resetMocks());
 
     beforeEach(() => {
-        sut = new ApiRequestHandler(baseURL, apiKey);
+        sut = new ApiRequestHandler('https://example.com', 'TESTKEY');
     });
 
-    describe('makeApiRequest', () => {
-        beforeEach(() => {
-            axios.request.mockReset();
+    describe('makeApiGetRequest', () => {
+        it('composes url and returns response', async () => {
+            const fakeResponse = {
+                data: 'XYZ'
+            };
+            fetchMock.mockOnce(JSON.stringify(fakeResponse));
+
+            const res = await sut.makeApiGetRequest<typeof fakeResponse>(
+                '/somepath'
+            );
+
+            expect(res).toEqual(fakeResponse);
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][0]).toEqual(
+                'https://example.com/somepath'
+            );
         });
 
-        it.each([['get', 'post', 'delete']])('sends request', async (method) => {
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const responseType = 'text';
-            const response = 'testResponse';
-            axios.request.mockResolvedValue({ data : response });
+        it('sets default headers and method', async () => {
+            fetchMock.mockOnce(JSON.stringify({}));
 
-            const res = await sut.makeApiRequest(method, endpoint, headers, responseType);
+            const res = await sut.makeApiGetRequest('/somepath');
 
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: method,
-                url: endpoint,
-                data: undefined,
-                headers: headers,
-                responseType: responseType
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][1]).toEqual({
+                headers: {
+                    Authorization: 'Bearer TESTKEY',
+                    'User-Agent': `CNaught-NodeSDK/${version}`
+                },
+                method: 'GET',
+                mode: 'cors'
             });
-            expect(res).toBe(response);
         });
 
-        it('passes params on post requests', async () => {
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const responseType = 'text';
-            const response = 'testResponse';
-            const params = { data : 'stuff' };
-            axios.request.mockResolvedValue({ data : response });
+        it('passes additional params when used', async () => {
+            fetchMock.mockOnce(JSON.stringify({}));
 
-            const res = await sut.makeApiRequest('post', endpoint, headers, responseType, params);
-
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: 'post',
-                url: endpoint,
-                data: { data : 'stuff' },
-                headers: headers,
-                responseType: responseType
+            const res = await sut.makeApiGetRequest('/somepath', {
+                subaccountId: 'MY-SUBACCOUNT',
+                extraRequestOptions: {
+                    next: { revalidate: 1000 }
+                }
             });
-            expect(res).toBe(response);
-        });
 
-        it.each([['get', 'delete']])('does not pass params on get or delete', async (method) => {
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const responseType = 'text';
-            const response = 'testResponse';
-            const params = { data : 'stuff' };
-            axios.request.mockResolvedValue({ data : response });
-
-            const res = await sut.makeApiRequest(method, endpoint, headers, responseType, params);
-
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: method,
-                url: endpoint,
-                data: undefined,
-                headers: headers,
-                responseType: responseType
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][1]).toEqual({
+                headers: {
+                    Authorization: 'Bearer TESTKEY',
+                    'User-Agent': `CNaught-NodeSDK/${version}`,
+                    'X-Subaccount-Id': 'MY-SUBACCOUNT'
+                },
+                method: 'GET',
+                mode: 'cors',
+                next: {
+                    revalidate: 1000
+                }
             });
-            expect(res).toBe(response);
         });
 
-        it('handles when api returns unauthorized', async () => {
-            const method = 'get';
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const responseType = 'text';
-            const fakeError = setupFakeApiError(401, 'Unauthorized');
-            axios.request.mockImplementationOnce(() => Promise.reject(fakeError));
+        it('throws error responses with correct details for simple error', async () => {
+            const forbiddenProblemDetails = {
+                type: forbiddenProblemType,
+                title: 'User is not allowed to use subaccounts. Contact support to request access.',
+                status: 403
+            };
+            fetchMock.mockOnce(JSON.stringify(forbiddenProblemDetails), {
+                status: 403
+            });
 
             try {
-                await sut.makeApiRequest(method, endpoint, headers, responseType);
-            } catch (e) {
-                expect(e).toEqual(new CNaughtError(fakeError));
+                await sut.makeApiGetRequest('/somepath', {
+                    subaccountId: 'MY-SUBACCOUNT',
+                    extraRequestOptions: {
+                        next: { revalidate: 1000 }
+                    }
+                });
+                throw new Error('expected to throw');
+            } catch (err) {
+                expect(err).toBeInstanceOf(CNaughtError);
+                const cnaughtErr = err as CNaughtError;
+                expect(cnaughtErr.status).toEqual(403);
+                expect(cnaughtErr.problemDetails).toEqual(
+                    forbiddenProblemDetails
+                );
             }
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: method,
-                url: endpoint,
-                data: undefined,
-                headers: headers,
-                responseType: responseType
-            });
         });
 
-        it('handles when api returns not found', async () => {
-            const method = 'get';
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const responseType = 'text';
-            const fakeError = setupFakeApiError(404, 'not found');
-            axios.request.mockImplementationOnce(() => Promise.reject(fakeError));
-
-            try {
-                await sut.makeApiRequest(method, endpoint, headers, responseType);
-            } catch (e) {
-                expect(e).toEqual(new CNaughtError(fakeError));
-            }
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: method,
-                url: endpoint,
-                data: undefined,
-                headers: headers,
-                responseType: responseType
-            });
-        });
-
-        it('handles when api returns bad request', async () => {
-            const method = 'get';
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const responseType = 'text';
-            const fakeError = setupFakeInvalidParametersError();
-            axios.request.mockImplementationOnce(() => Promise.reject(fakeError));
-
-            try {
-                await sut.makeApiRequest(method, endpoint, headers, responseType);
-            } catch (e) {
-                expect(e).toEqual(new InvalidParameterError(fakeError));
-            }
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: method,
-                url: endpoint,
-                data: undefined,
-                headers: headers,
-                responseType: responseType
-            });
-        });
-
-        it('handles when api returns invalid state', async () => {
-            const method = 'get';
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const responseType = 'text';
-            const fakeError = setupFakeInvalidStateError();
-            axios.request.mockImplementationOnce(() => Promise.reject(fakeError));
-
-            try {
-                await sut.makeApiRequest(method, endpoint, headers, responseType);
-            } catch (e) {
-                expect(e).toEqual(new InvalidStateError(fakeError));
-            }
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: method,
-                url: endpoint,
-                data: undefined,
-                headers: headers,
-                responseType: responseType
-            });
-        });
-
-        it('reads error response body when error is thrown from stream request', async () => {
-            const responseType = 'stream';
-            const method = 'get';
-            const endpoint = '/test';
-            const headers = { 'Header1' : 'test' };
-            const fakeError = setupFakeInvalidParametersError();
-            const fakeData = {
-                title: 'fakeTitle',
-                type: 'fakeType',
-                detail: 'fakeDetail',
-                parameters: {
-                    'media_url': [
-                        'The media_url field is required'
-                    ]
+        it('throws error responses with correct details for validation error', async () => {
+            const invalidParamsProblemDetails = {
+                type: invalidParametersProblemType,
+                title: 'Parameters failed to validate',
+                status: 400,
+                errors: {
+                    someField: ['Some message']
                 }
             };
-            const responseStream = new Transform({ objectMode: true });
-            responseStream.push(JSON.stringify(fakeData));
-            fakeError.response.data = responseStream;
-            axios.request.mockImplementationOnce(() => Promise.reject(fakeError));
+            fetchMock.mockOnce(JSON.stringify(invalidParamsProblemDetails), {
+                status: 400
+            });
 
             try {
-                await sut.makeApiRequest(method, endpoint, headers, responseType);
-            } catch (e) {
-                expect(e).toEqual(new InvalidParameterError(fakeError));
+                await sut.makeApiGetRequest('/somepath', {
+                    subaccountId: 'MY-SUBACCOUNT',
+                    extraRequestOptions: {
+                        next: { revalidate: 1000 }
+                    }
+                });
+                throw new Error('expected to throw');
+            } catch (err) {
+                expect(err).toBeInstanceOf(CNaughtError);
+                const cnaughtErr = err as CNaughtError;
+                expect(cnaughtErr.status).toEqual(400);
+                expect(cnaughtErr.problemDetails).toEqual(
+                    invalidParamsProblemDetails
+                );
             }
-            expect(axios.request).toBeCalledTimes(1);
-            expect(axios.request).toBeCalledWith({
-                method: method,
-                url: endpoint,
-                data: undefined,
-                headers: headers,
-                responseType: responseType
+        });
+    });
+
+    describe('makeApiPostRequest', () => {
+        it('composes url, sends body and returns response', async () => {
+            const fakeResponse = {
+                data: 'XYZ'
+            };
+            fetchMock.mockOnce(JSON.stringify(fakeResponse));
+            const fakeReq = {
+                data: 'ABC'
+            };
+
+            const res = await sut.makeApiPostRequest<typeof fakeResponse>(
+                '/postpath',
+                fakeReq
+            );
+
+            expect(res).toEqual(fakeResponse);
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][0]).toEqual(
+                'https://example.com/postpath'
+            );
+            expect(fetchMock.mock.calls[0][1]).toEqual({
+                headers: {
+                    Authorization: 'Bearer TESTKEY',
+                    'User-Agent': `CNaught-NodeSDK/${version}`,
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify(fakeReq),
+                mode: 'cors'
             });
+        });
+
+        it('passes additional params when used', async () => {
+            fetchMock.mockOnce(JSON.stringify({}));
+
+            const res = await sut.makeApiPostRequest('/postpath2', null, {
+                subaccountId: 'MY-SUBACCOUNT',
+                idempotencyKey: 'MY-IDEMPOTENCY-KEY',
+                extraRequestOptions: {
+                    next: { revalidate: 1000 }
+                }
+            });
+
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][1]).toEqual({
+                headers: {
+                    Authorization: 'Bearer TESTKEY',
+                    'User-Agent': `CNaught-NodeSDK/${version}`,
+                    'X-Subaccount-Id': 'MY-SUBACCOUNT',
+                    'Idempotency-Key': 'MY-IDEMPOTENCY-KEY'
+                },
+                method: 'POST',
+                mode: 'cors',
+                next: {
+                    revalidate: 1000
+                }
+            });
+        });
+
+        it('throws error responses with correct details for simple error', async () => {
+            const forbiddenProblemDetails = {
+                type: forbiddenProblemType,
+                title: 'User is not allowed to use subaccounts. Contact support to request access.',
+                status: 403
+            };
+            fetchMock.mockOnce(JSON.stringify(forbiddenProblemDetails), {
+                status: 403
+            });
+
+            try {
+                await sut.makeApiPostRequest('/somepath', null, {
+                    subaccountId: 'MY-SUBACCOUNT',
+                    extraRequestOptions: {
+                        next: { revalidate: 1000 }
+                    }
+                });
+                throw new Error('expected to throw');
+            } catch (err) {
+                expect(err).toBeInstanceOf(CNaughtError);
+                const cnaughtErr = err as CNaughtError;
+                expect(cnaughtErr.status).toEqual(403);
+                expect(cnaughtErr.problemDetails).toEqual(
+                    forbiddenProblemDetails
+                );
+            }
+        });
+
+        it('throws error responses with correct details for validation error', async () => {
+            const invalidParamsProblemDetails = {
+                type: invalidParametersProblemType,
+                title: 'Parameters failed to validate',
+                status: 400,
+                errors: {
+                    someField: ['Some message']
+                }
+            };
+            fetchMock.mockOnce(JSON.stringify(invalidParamsProblemDetails), {
+                status: 400
+            });
+
+            try {
+                await sut.makeApiPostRequest('/somepath', null, {
+                    subaccountId: 'MY-SUBACCOUNT',
+                    extraRequestOptions: {
+                        next: { revalidate: 1000 }
+                    }
+                });
+                throw new Error('expected to throw');
+            } catch (err) {
+                expect(err).toBeInstanceOf(CNaughtError);
+                const cnaughtErr = err as CNaughtError;
+                expect(cnaughtErr.status).toEqual(400);
+                expect(cnaughtErr.problemDetails).toEqual(
+                    invalidParamsProblemDetails
+                );
+            }
         });
     });
 });

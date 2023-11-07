@@ -1,3 +1,5 @@
+/*
+
 import { AxiosError } from 'axios';
 
 export const fakeAxiosError = {
@@ -55,3 +57,4 @@ export const setupFakeInvalidParametersError = (): AxiosError => {
     };
     return err;
 };
+*/

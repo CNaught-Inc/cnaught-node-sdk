@@ -137,10 +137,11 @@ export class CNaughtApiClient {
             SubaccountRequestOptions &
             ApiRequestOptions
     ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiPostRequest<GenericOrder>('/orders', {
-            ...requestOptions,
-            data: options
-        });
+        this.apiHandler.makeApiPostRequest<GenericOrder>(
+            '/orders',
+            options,
+            requestOptions
+        );
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/SubmitRideOrder
@@ -157,10 +158,11 @@ export class CNaughtApiClient {
             SubaccountRequestOptions &
             ApiRequestOptions
     ): Promise<RideOrder> =>
-        this.apiHandler.makeApiPostRequest<RideOrder>('/orders/ride', {
-            ...requestOptions,
-            data: options
-        });
+        this.apiHandler.makeApiPostRequest<RideOrder>(
+            '/orders/ride',
+            options,
+            requestOptions
+        );
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/CancelOrder
@@ -179,6 +181,7 @@ export class CNaughtApiClient {
     ): Promise<GenericOrder> =>
         this.apiHandler.makeApiPostRequest<GenericOrder>(
             `/orders/${id}/cancel`,
+            null,
             requestOptions
         );
 
@@ -194,10 +197,11 @@ export class CNaughtApiClient {
         params: GenericQuoteParams,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<OffsetsQuote> =>
-        this.apiHandler.makeApiPostRequest<OffsetsQuote>('/quotes', {
-            ...requestOptions,
-            data: params
-        });
+        this.apiHandler.makeApiPostRequest<OffsetsQuote>(
+            '/quotes',
+            params,
+            requestOptions
+        );
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/RequestRideQuote
@@ -211,10 +215,11 @@ export class CNaughtApiClient {
         params: RideQuoteParams,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<OffsetsQuote> =>
-        this.apiHandler.makeApiPostRequest<OffsetsQuote>('/quotes/ride', {
-            ...requestOptions,
-            data: params
-        });
+        this.apiHandler.makeApiPostRequest<OffsetsQuote>(
+            '/quotes/ride',
+            params,
+            requestOptions
+        );
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/CreateSubaccount
@@ -228,10 +233,11 @@ export class CNaughtApiClient {
         options: SubaccountOptions,
         requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
     ): Promise<Subaccount> =>
-        this.apiHandler.makeApiPostRequest<Subaccount>('/subaccounts', {
-            ...requestOptions,
-            data: options
-        });
+        this.apiHandler.makeApiPostRequest<Subaccount>(
+            '/subaccounts',
+            options,
+            requestOptions
+        );
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetSubaccountById

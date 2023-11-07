@@ -1,19 +1,37 @@
-import { CNaughtApiClient } from '../../../src/api-client';
-import { ApiRequestHandler } from '../../../src/api-request-handler';
-import { GenericOrderOptions } from '../../../src/models/GenericOrderOptions';
-import { RideOrderOptions } from '../../../src/models/RideOrderOptions';
-import { GenericQuoteParams } from '../../../src/models/GenericQuoteParams';
-import { RideQuoteParams } from '../../../src/models/RideQuoteParams';
-import { Subaccount } from '../../../src/models/Subaccount';
-import { ImpactData } from '../../../src/models/ImpactData';
-import { ImpactHostedPageConfig } from '../../../src/models/ImpactHostedPageConfig';
-import { SubaccountOptions } from '../../../src/models/SubaccountOptions';
+import { CNaughtApiClient } from '../../src/api-client.js';
+import { ApiRequestHandler } from '../../src/api-request-handler.js';
+import type {
+    GenericOrderOptions,
+    RideOrderOptions,
+    GenericQuoteParams,
+    RideQuoteParams,
+    SubaccountOptions,
+    Subaccount,
+    ImpactData,
+    ImpactHostedPageConfig
+} from '../../src/models/index.js';
 
-jest.mock('../../../src/api-request-handler');
+import { jest } from '@jest/globals';
+
+const mockMakeApiGetRequest: jest.Mock<ApiRequestHandler['makeApiGetRequest']> =
+    jest.fn();
+const mockMakeApiPostRequest: jest.Mock<
+    ApiRequestHandler['makeApiGetRequest']
+> = jest.fn();
+
+jest.mock('../../src/api-request-handler.js', () => {
+    return {
+        ApiRequestHandler: jest.fn().mockImplementation(() => {
+            return {
+                makeApiGetRequest: mockMakeApiGetRequest,
+                makeApiPostRequest: mockMakeApiPostRequest
+            };
+        })
+    };
+});
 
 describe('api-client', () => {
     let sut: CNaughtApiClient;
-    let mockMakeApiRequest: jest.Mock;
 
     const orderId = 'ABCDEF';
     const otherOrderId = 'XYZZYX';
@@ -100,54 +118,64 @@ describe('api-client', () => {
     };
 
     beforeEach(() => {
-        mockMakeApiRequest = jest.fn();
-        (ApiRequestHandler as jest.Mock<ApiRequestHandler>).mockImplementationOnce(() => ({
-            makeApiRequest: mockMakeApiRequest
-        }));
+        mockMakeApiPostRequest.mockClear();
+        mockMakeApiGetRequest.mockClear();
         sut = new CNaughtApiClient('apikey');
     });
 
     describe('getOrderDetails', () => {
         it('get order by id', async () => {
-            mockMakeApiRequest.mockResolvedValue(fulfilledOrderDetails);
+            mockMakeApiGetRequest.mockResolvedValue(fulfilledOrderDetails);
 
             const order = await sut.getOrderDetails(orderId);
 
-            expect(mockMakeApiRequest).toBeCalledWith('get', `/orders/${orderDetails.id}`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/orders/${orderDetails.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(order).toEqual(fulfilledOrderDetails);
         });
 
         it('get order by id for subaccount', async () => {
-            mockMakeApiRequest.mockResolvedValue(fulfilledOrderDetails);
+            mockMakeApiGetRequest.mockResolvedValue(fulfilledOrderDetails);
 
-            const order = await sut.getOrderDetails(orderId, { subaccountId: 'ABC'});
+            const order = await sut.getOrderDetails(orderId, {
+                subaccountId: 'ABC'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('get', `/orders/${orderDetails.id}`, { 'X-Subaccount-Id': 'ABC' }, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/orders/${orderDetails.id}`,
+                { subaccountId: 'ABC' }
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(order).toEqual(fulfilledOrderDetails);
         });
     });
 
     describe('getListOfOrders', () => {
         it('get list of orders', async () => {
-            mockMakeApiRequest.mockResolvedValue([orderDetails]);
+            mockMakeApiGetRequest.mockResolvedValue([orderDetails]);
 
             const orders = await sut.getListOfOrders();
 
             expect(orders).toEqual([orderDetails]);
-            expect(mockMakeApiRequest).toBeCalledWith('get', '/orders', {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith('/orders', undefined);
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
 
         it('get list of orders for subaccount', async () => {
-            mockMakeApiRequest.mockResolvedValue([orderDetails]);
+            mockMakeApiGetRequest.mockResolvedValue([orderDetails]);
 
-            const orders = await sut.getListOfOrders(undefined, undefined, { subaccountId: 'XYZ'});
+            const orders = await sut.getListOfOrders(undefined, undefined, {
+                subaccountId: 'XYZ'
+            });
 
             expect(orders).toEqual([orderDetails]);
-            expect(mockMakeApiRequest).toBeCalledWith('get', '/orders', { 'X-Subaccount-Id': 'XYZ' }, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith('/orders', {
+                subaccountId: 'XYZ'
+            });
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
 
         it('get list of orders with limit of 5', async () => {
@@ -157,24 +185,29 @@ describe('api-client', () => {
                 created_on: '2022-08-05T23:23:22.29Z'
             };
             const data = [orderDetails, orderDetails2];
-            mockMakeApiRequest.mockResolvedValue(data);
+            mockMakeApiGetRequest.mockResolvedValue(data);
 
-            const orders = await sut.getListOfOrders(5);
+            const orders = await sut.getListOfOrders(5, undefined);
 
             expect(orders).toEqual([orderDetails, orderDetails2]);
-            expect(mockMakeApiRequest).toBeCalledWith('get', '/orders?limit=5', {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                '/orders?limit=5',
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
 
         it('get list of orders starting after certain order id', async () => {
-            mockMakeApiRequest.mockResolvedValue([orderDetails]);
+            mockMakeApiGetRequest.mockResolvedValue([orderDetails]);
 
             const orders = await sut.getListOfOrders(undefined, otherOrderId);
 
             expect(orders).toEqual([orderDetails]);
-            expect(mockMakeApiRequest).toBeCalledWith('get',
-                `/orders?starting_after=${otherOrderId}`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/orders?starting_after=${otherOrderId}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
 
         it('get list of orders with limit of 5 and starting after certain order id', async () => {
@@ -184,20 +217,25 @@ describe('api-client', () => {
                 status: 'cancelled',
                 created_on: '2022-05-05T23:23:22.29Z'
             };
-            mockMakeApiRequest.mockResolvedValue([orderDetails, orderDetails2]);
+            mockMakeApiGetRequest.mockResolvedValue([
+                orderDetails,
+                orderDetails2
+            ]);
 
             const orders = await sut.getListOfOrders(limit, otherOrderId);
 
             expect(orders).toEqual([orderDetails, orderDetails2]);
-            expect(mockMakeApiRequest).toBeCalledWith('get',
-                `/orders?limit=${limit}&starting_after=${otherOrderId}`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/orders?limit=${limit}&starting_after=${otherOrderId}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
     });
 
     describe('placeGenericOrder', () => {
         it('place order ', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: GenericOrderOptions = {
                 metadata: 'clientid:124',
@@ -209,14 +247,17 @@ describe('api-client', () => {
 
             const order = await sut.placeGenericOrder(options);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders',
-                { 'Content-Type': 'application/json' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('place order with portfolio id', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: GenericOrderOptions = {
                 metadata: 'clientid:124',
@@ -229,14 +270,17 @@ describe('api-client', () => {
 
             const order = await sut.placeGenericOrder(options);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders',
-                { 'Content-Type': 'application/json' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('place order with idempotency', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: GenericOrderOptions = {
                 metadata: 'clientid:124',
@@ -246,16 +290,19 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options, { idempotencyKey: 'ABCD' });
+            const order = await sut.placeGenericOrder(options, {
+                idempotencyKey: 'ABCD'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders',
-                { 'Content-Type': 'application/json', 'Idempotency-Key': 'ABCD' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith('/orders', options, {
+                idempotencyKey: 'ABCD'
+            });
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('place order for subaccount', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: GenericOrderOptions = {
                 metadata: 'clientid:124',
@@ -265,18 +312,21 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options, { subaccountId: 'XYZ' });
+            const order = await sut.placeGenericOrder(options, {
+                subaccountId: 'XYZ'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders',
-                { 'Content-Type': 'application/json', 'X-Subaccount-Id': 'XYZ' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith('/orders', options, {
+                subaccountId: 'XYZ'
+            });
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
     });
 
     describe('placeRideOrder', () => {
         it('place ride order ', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: RideOrderOptions = {
                 metadata: 'clientid:124',
@@ -288,14 +338,17 @@ describe('api-client', () => {
 
             const order = await sut.placeRideOrder(options);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/ride',
-                { 'Content-Type': 'application/json' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders/ride',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('place ride order with portfolio id', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: RideOrderOptions = {
                 metadata: 'clientid:124',
@@ -308,14 +361,17 @@ describe('api-client', () => {
 
             const order = await sut.placeRideOrder(options);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/ride',
-                { 'Content-Type': 'application/json' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders/ride',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('place ride order with idempotency', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: RideOrderOptions = {
                 metadata: 'clientid:124',
@@ -325,16 +381,23 @@ describe('api-client', () => {
                 distance_km: 15
             };
 
-            const order = await sut.placeRideOrder(options, { idempotencyKey: 'ABCD' });
+            const order = await sut.placeRideOrder(options, {
+                idempotencyKey: 'ABCD'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/ride',
-                { 'Content-Type': 'application/json', 'Idempotency-Key': 'ABCD' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders/ride',
+                options,
+                {
+                    idempotencyKey: 'ABCD'
+                }
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('place ride order with idempotency and subaccount', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: RideOrderOptions = {
                 metadata: 'clientid:124',
@@ -344,19 +407,27 @@ describe('api-client', () => {
                 distance_km: 15
             };
 
-            const order = await sut.placeRideOrder(options,
-                { idempotencyKey: 'ABCD', subaccountId: 'XYZ' });
+            const order = await sut.placeRideOrder(options, {
+                idempotencyKey: 'ABCD',
+                subaccountId: 'XYZ'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/ride',
-                { 'Content-Type': 'application/json', 'Idempotency-Key': 'ABCD', 'X-Subaccount-Id': 'XYZ' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders/ride',
+                options,
+                {
+                    idempotencyKey: 'ABCD',
+                    subaccountId: 'XYZ'
+                }
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
     });
 
     describe('getGenericQuote', () => {
         it('get quote', async () => {
-            mockMakeApiRequest.mockResolvedValue(quote);
+            mockMakeApiPostRequest.mockResolvedValue(quote);
 
             const params: GenericQuoteParams = {
                 amount_kg: 15
@@ -364,14 +435,17 @@ describe('api-client', () => {
 
             const result = await sut.getGenericQuote(params);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/quotes',
-                { 'Content-Type': 'application/json' }, 'json', params);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/quotes',
+                params,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(result).toEqual(quote);
         });
 
         it('get quote with portfolio id', async () => {
-            mockMakeApiRequest.mockResolvedValue(quote);
+            mockMakeApiPostRequest.mockResolvedValue(quote);
 
             const params: GenericQuoteParams = {
                 amount_kg: 15,
@@ -380,16 +454,19 @@ describe('api-client', () => {
 
             const result = await sut.getGenericQuote(params);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/quotes',
-                { 'Content-Type': 'application/json' }, 'json', params);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/quotes',
+                params,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(result).toEqual(quote);
         });
     });
 
     describe('getRideQuote', () => {
         it('get quote', async () => {
-            mockMakeApiRequest.mockResolvedValue(quote);
+            mockMakeApiPostRequest.mockResolvedValue(quote);
 
             const params: RideQuoteParams = {
                 distance_km: 10
@@ -397,14 +474,17 @@ describe('api-client', () => {
 
             const result = await sut.getRideQuote(params);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/quotes/ride',
-                { 'Content-Type': 'application/json' }, 'json', params);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/quotes/ride',
+                params,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(result).toEqual(quote);
         });
 
         it('get quote with portfolio id', async () => {
-            mockMakeApiRequest.mockResolvedValue(quote);
+            mockMakeApiPostRequest.mockResolvedValue(quote);
 
             const params: RideQuoteParams = {
                 distance_km: 10,
@@ -413,71 +493,92 @@ describe('api-client', () => {
 
             const result = await sut.getRideQuote(params);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/quotes/ride',
-                { 'Content-Type': 'application/json' }, 'json', params);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/quotes/ride',
+                params,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(result).toEqual(quote);
         });
-
     });
 
     describe('cancelOrder', () => {
         it('cancel order ', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const order = await sut.cancelOrder('123');
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/123/cancel',
-                {  }, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders/123/cancel',
+                null,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('cancel order with idempotency', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const order = await sut.cancelOrder('123', { idempotencyKey: 'ABCD' });
+            const order = await sut.cancelOrder('123', {
+                idempotencyKey: 'ABCD'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/123/cancel',
-                { 'Idempotency-Key': 'ABCD' }, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders/123/cancel',
+                null,
+                { idempotencyKey: 'ABCD' }
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
 
         it('cancel order with idempotency and subaccount', async () => {
-            mockMakeApiRequest.mockResolvedValue(orderDetails);
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const order = await sut.cancelOrder('123',
-                { idempotencyKey: 'ABCD', subaccountId: 'XYZ' });
+            const order = await sut.cancelOrder('123', {
+                idempotencyKey: 'ABCD',
+                subaccountId: 'XYZ'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/orders/123/cancel',
-                { 'Idempotency-Key': 'ABCD', 'X-Subaccount-Id': 'XYZ' }, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders/123/cancel',
+                null,
+                { idempotencyKey: 'ABCD', subaccountId: 'XYZ' }
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
     });
 
     describe('getSubaccountDetails', () => {
         it('get subaccount by id', async () => {
-            mockMakeApiRequest.mockResolvedValue(subaccountDetails);
+            mockMakeApiGetRequest.mockResolvedValue(subaccountDetails);
 
             const subaccount = await sut.getSubaccountDetails(subaccountId);
 
-            expect(mockMakeApiRequest).toBeCalledWith('get', `/subaccounts/${subaccount.id}`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/subaccounts/${subaccount.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(subaccount).toEqual(subaccountDetails);
         });
     });
 
     describe('getListOfSubaccounts', () => {
         it('get list of subaccounts', async () => {
-            mockMakeApiRequest.mockResolvedValue([subaccountDetails]);
+            mockMakeApiGetRequest.mockResolvedValue([subaccountDetails]);
 
             const subaccounts = await sut.getListOfSubaccounts();
 
             expect(subaccounts).toEqual([subaccountDetails]);
-            expect(mockMakeApiRequest).toBeCalledWith('get', '/subaccounts', {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                '/subaccounts',
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
 
         it('get list of subaccounts with limit of 5', async () => {
@@ -486,24 +587,35 @@ describe('api-client', () => {
                 name: 'Other subaccount'
             };
             const data = [subaccountDetails, subaccountsDetails2];
-            mockMakeApiRequest.mockResolvedValue(data);
+            mockMakeApiGetRequest.mockResolvedValue(data);
 
-            const subaccounts = await sut.getListOfSubaccounts(5);
+            const subaccounts = await sut.getListOfSubaccounts(5, undefined);
 
-            expect(subaccounts).toEqual([subaccountDetails, subaccountsDetails2]);
-            expect(mockMakeApiRequest).toBeCalledWith('get', '/subaccounts?limit=5', {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(subaccounts).toEqual([
+                subaccountDetails,
+                subaccountsDetails2
+            ]);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                '/subaccounts?limit=5',
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
 
         it('get list of subaccounts starting after certain subaccount id', async () => {
-            mockMakeApiRequest.mockResolvedValue([subaccountDetails]);
+            mockMakeApiGetRequest.mockResolvedValue([subaccountDetails]);
 
-            const subaccounts = await sut.getListOfSubaccounts(undefined, otherSubaccountId);
+            const subaccounts = await sut.getListOfSubaccounts(
+                undefined,
+                otherSubaccountId
+            );
 
             expect(subaccounts).toEqual([subaccountDetails]);
-            expect(mockMakeApiRequest).toBeCalledWith('get',
-                `/subaccounts?starting_after=${otherSubaccountId}`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/subaccounts?starting_after=${otherSubaccountId}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
 
         it('get list of subaccounts with limit of 5 and starting after certain subaccount id', async () => {
@@ -513,20 +625,28 @@ describe('api-client', () => {
                 name: 'Other subaccount'
             };
             const data = [subaccountDetails, subaccountsDetails2];
-            mockMakeApiRequest.mockResolvedValue(data);
+            mockMakeApiGetRequest.mockResolvedValue(data);
 
-            const subaccounts = await sut.getListOfSubaccounts(limit, otherSubaccountId);
+            const subaccounts = await sut.getListOfSubaccounts(
+                limit,
+                otherSubaccountId
+            );
 
-            expect(subaccounts).toEqual([subaccountDetails, subaccountsDetails2]);
-            expect(mockMakeApiRequest).toBeCalledWith('get',
-                `/subaccounts?limit=${limit}&starting_after=${otherSubaccountId}`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(subaccounts).toEqual([
+                subaccountDetails,
+                subaccountsDetails2
+            ]);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/subaccounts?limit=${limit}&starting_after=${otherSubaccountId}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
     });
 
     describe('createSubaccount', () => {
         it('create subaccount', async () => {
-            mockMakeApiRequest.mockResolvedValue(subaccountDetails);
+            mockMakeApiPostRequest.mockResolvedValue(subaccountDetails);
 
             const options: SubaccountOptions = {
                 name: 'My Company',
@@ -535,49 +655,65 @@ describe('api-client', () => {
 
             const subaccount = await sut.createSubaccount(options);
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/subaccounts',
-                { 'Content-Type': 'application/json' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/subaccounts',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(subaccount).toEqual(subaccountDetails);
         });
 
         it('create subaccount with idempotency', async () => {
-            mockMakeApiRequest.mockResolvedValue(subaccountDetails);
+            mockMakeApiPostRequest.mockResolvedValue(subaccountDetails);
 
             const options: SubaccountOptions = {
                 name: 'My Company',
                 default_portfolio_id: 'XYZ'
             };
 
-            const subaccount = await sut.createSubaccount(options, { idempotencyKey: 'ABCD' });
+            const subaccount = await sut.createSubaccount(options, {
+                idempotencyKey: 'ABCD'
+            });
 
-            expect(mockMakeApiRequest).toBeCalledWith('post', '/subaccounts',
-                { 'Content-Type': 'application/json', 'Idempotency-Key': 'ABCD' }, 'json', options);
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/subaccounts',
+                options,
+                {
+                    idempotencyKey: 'ABCD'
+                }
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(subaccount).toEqual(subaccountDetails);
         });
     });
 
     describe('getImpactData', () => {
         it('get impact data', async () => {
-            mockMakeApiRequest.mockResolvedValue(impactData);
+            mockMakeApiGetRequest.mockResolvedValue(impactData);
 
             const res = await sut.getImpactData();
 
-            expect(mockMakeApiRequest).toBeCalledWith('get', `/impact/data`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/impact/data`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(res).toEqual(impactData);
         });
     });
 
     describe('getImpactHostedPageConfig', () => {
         it('get impact hosted page config', async () => {
-            mockMakeApiRequest.mockResolvedValue(impactHostedPageConfig);
+            mockMakeApiGetRequest.mockResolvedValue(impactHostedPageConfig);
 
             const res = await sut.getImpactHostedPageConfig();
 
-            expect(mockMakeApiRequest).toBeCalledWith('get', `/impact/hosted-page-config`, {}, 'json');
-            expect(mockMakeApiRequest).toBeCalledTimes(1);
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/impact/hosted-page-config`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(res).toEqual(impactHostedPageConfig);
         });
     });

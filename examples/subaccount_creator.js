@@ -1,6 +1,10 @@
 /* eslint-disable max-len */
 import { randomUUID } from 'crypto';
-import { CNaughtApiClient, CNaughtError } from '@cnaught/cnaught-node-sdk';
+import {
+    CNaughtApiClient,
+    CNaughtError,
+    invalidParametersProblemType
+} from '@cnaught/cnaught-node-sdk';
 import inquirer from 'inquirer';
 import 'dotenv/config';
 
@@ -33,24 +37,18 @@ import 'dotenv/config';
     } catch (err) {
         if (err instanceof CNaughtError) {
             switch (err.problemDetails.type) {
-                case 'https://api.cnaught.com/v1/errors/invalid-parameters':
+                case invalidParametersProblemType:
                     console.log(
-                        'Parameters did not validate',
+                        err.problemDetails.title,
                         err.problemDetails.errors
                     );
                     break;
-                case 'https://api.cnaught.com/v1/errors/not-found':
-                    console.log(
-                        'Could not find something',
-                        err.problemDetails.title
-                    );
-                    break;
                 default:
-                    console.log('CNaught error', err.problemDetails.title);
+                    console.log(err.problemDetails.title);
                     break;
             }
         } else {
-            console.log('Generic error', err);
+            console.log('An error occurred', err);
         }
     }
 })();

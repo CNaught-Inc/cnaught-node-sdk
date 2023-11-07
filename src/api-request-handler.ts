@@ -22,7 +22,6 @@ import type {
 type InternalRequestOptions = ApiRequestOptions &
     IdempotencyRequestOptions &
     SubaccountRequestOptions & {
-        data?: unknown;
         headers?: HeadersInit;
     };
 
@@ -57,7 +56,7 @@ export class ApiRequestHandler {
             })
             .auth(`Bearer ${apiKey}`)
             .headers({
-                'User-Agent': `CNaught-NodeSDK/${packageJson.version}`
+                'User-Agent': `CNaught-NodeSDK/v2.0.0-rc3`
             })
             .errorType('json')
             .catcherFallback((error, req) => {
@@ -78,7 +77,7 @@ export class ApiRequestHandler {
         requestOptions?: Omit<InternalRequestOptions, 'data'>
     ) =>
         this.wretch
-            .headers(this.getHeaders(requestOptions))
+            .headers(this.getHeaders(false, requestOptions))
             .options({
                 ...requestOptions?.extraRequestOptions
             })
@@ -87,22 +86,26 @@ export class ApiRequestHandler {
 
     public makeApiPostRequest = <Response>(
         url: string,
+        data: unknown | null,
         requestOptions?: InternalRequestOptions
     ) =>
         this.wretch
-            .headers(this.getHeaders(requestOptions))
+            .headers(this.getHeaders(data !== null, requestOptions))
             .options({
                 ...requestOptions?.extraRequestOptions
             })
-            .post(requestOptions?.data, url)
+            .post(data, url)
             .json<Response>();
 
-    private getHeaders(requestOptions?: InternalRequestOptions): HeadersInit {
+    private getHeaders(
+        hasData: boolean,
+        requestOptions?: InternalRequestOptions
+    ): HeadersInit {
         const headers: HeadersInit = {};
         if (requestOptions?.idempotencyKey) {
             headers['Idempotency-Key'] = requestOptions.idempotencyKey;
         }
-        if (requestOptions?.data) {
+        if (hasData) {
             headers['Content-Type'] = 'application/json';
         }
         if (requestOptions?.subaccountId) {
