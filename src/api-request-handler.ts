@@ -11,8 +11,8 @@ import type {
 import { fromObject } from 'http-problem-details-parser';
 import { ProblemDocumentExtension } from 'http-problem-details';
 import { invalidParametersProblemType } from './models/CNaughtProblemDetails.js';
+import { version } from './version.js';
 import type { CNaughtProblemDetails } from './models/CNaughtProblemDetails.js';
-import packageJson from '../package.json' assert { type: 'json' };
 import type { ApiRequestOptions } from './api-client.js';
 import type {
     IdempotencyRequestOptions,
@@ -56,7 +56,7 @@ export class ApiRequestHandler {
             })
             .auth(`Bearer ${apiKey}`)
             .headers({
-                'User-Agent': `CNaught-NodeSDK/v2.0.0-rc3`
+                'User-Agent': `CNaught-NodeSDK/${version}`
             })
             .errorType('json')
             .catcherFallback((error, req) => {

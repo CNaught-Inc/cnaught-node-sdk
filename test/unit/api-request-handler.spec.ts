@@ -8,7 +8,7 @@ import {
 } from '../../src/models/index.js';
 enableFetchMocks();
 
-const version = 'v2.0.0-rc3';
+import { version } from '../../src/version.js';
 
 describe('api-client', () => {
     let sut: ApiRequestHandler;
