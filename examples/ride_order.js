@@ -2,7 +2,6 @@
 import { randomUUID } from 'crypto';
 import {
     CNaughtApiClient,
-    CNaughtError,
     invalidParametersProblemType
 } from '@cnaught/cnaught-node-sdk';
 import inquirer from 'inquirer';
@@ -11,7 +10,8 @@ import 'dotenv/config';
 (async () => {
     // Initialize your client with your CNaught API key
     const client = new CNaughtApiClient(process.env.CNAUGHT_API_KEY, {
-        hostname: 'api-stage.cnaught.com'
+        hostname: 'api-local.cnaught.com',
+        port: 3011
     });
 
     try {
@@ -133,7 +133,7 @@ import 'dotenv/config';
             console.log('Maybe next time');
         }
     } catch (err) {
-        if (err instanceof CNaughtError) {
+        if (err.problemDetails) {
             switch (err.problemDetails.type) {
                 case invalidParametersProblemType:
                     console.log(

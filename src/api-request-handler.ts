@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable indent */
 
-import { CNaughtError } from './models/CNaughtError.js';
-import ky from 'ky';
+import type { CNaughtError } from './models/CNaughtError.js';
+import wretch from 'wretch';
+import type { Wretch } from 'wretch';
 import type {
     HttpProblemExtensionMapper,
     ProblemObject
@@ -18,18 +19,11 @@ import type {
     SubaccountRequestOptions
 } from './models/index.js';
 
-export type HttpMethodTypes = 'POST' | 'GET' | 'DELETE';
-type KyInstance = typeof ky;
-
-export type CNaughtHeadersInit =
-    | HeadersInit
-    | Record<string, string | undefined>;
-
 type InternalRequestOptions = ApiRequestOptions &
     IdempotencyRequestOptions &
     SubaccountRequestOptions & {
         data?: unknown;
-        headers?: CNaughtHeadersInit;
+        headers?: HeadersInit;
     };
 
 const mappers: HttpProblemExtensionMapper[] = [
@@ -47,7 +41,7 @@ const mappers: HttpProblemExtensionMapper[] = [
  */
 export class ApiRequestHandler {
     /** Single instance of axios which uses provided arguments for all requests */
-    instance: KyInstance;
+    wretch: Wretch;
 
     constructor(
         baseUrl: string,
@@ -57,62 +51,57 @@ export class ApiRequestHandler {
             init?: RequestInit
         ) => Promise<Response>
     ) {
-        this.instance = ky.create({
-            fetch: fetch ?? globalThis.fetch.bind(globalThis),
-            prefixUrl: baseUrl,
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
+        this.wretch = wretch(baseUrl, { mode: 'cors' })
+            .polyfills({
+                fetch: fetch ?? globalThis.fetch.bind(this)
+            })
+            .auth(`Bearer ${apiKey}`)
+            .headers({
                 'User-Agent': `CNaught-NodeSDK/${packageJson.version}`
-            },
-            hooks: {
-                beforeError: [
-                    async (error) => {
-                        if (!error.response) {
-                            return error;
-                        }
-                        const problemDetailsObject =
-                            (await error.response.json()) as ProblemObject;
-                        const problemDetails = fromObject(
-                            problemDetailsObject,
-                            mappers
-                        ) as CNaughtProblemDetails;
-                        return new CNaughtError(error, problemDetails);
-                    }
-                ]
-            }
-        });
+            })
+            .errorType('json')
+            .catcherFallback((error, req) => {
+                if (!error.json) {
+                    throw error;
+                }
+                const problemDetailsObject = error.json as ProblemObject;
+                const problemDetails = fromObject(
+                    problemDetailsObject,
+                    mappers
+                ) as CNaughtProblemDetails;
+                throw {
+                    ...error,
+                    problemDetails
+                } satisfies CNaughtError;
+            });
     }
-
-    public makeApiRequest = async <Response>(
-        method: HttpMethodTypes,
-        url: string,
-        requestOptions?: InternalRequestOptions
-    ): Promise<Response> => {
-        const response = this.instance(url, {
-            body: requestOptions?.data
-                ? JSON.stringify(requestOptions?.data)
-                : undefined,
-            method,
-            headers: this.getHeaders(requestOptions),
-            ...requestOptions?.extraRequestOptions
-        });
-        return await response.json<Response>();
-    };
 
     public makeApiGetRequest = <Response>(
         url: string,
         requestOptions?: Omit<InternalRequestOptions, 'data'>
-    ) => this.makeApiRequest<Response>('GET', url, requestOptions);
+    ) =>
+        this.wretch
+            .headers(this.getHeaders(requestOptions))
+            .options({
+                ...requestOptions?.extraRequestOptions
+            })
+            .get(url)
+            .json<Response>();
 
     public makeApiPostRequest = <Response>(
         url: string,
         requestOptions?: InternalRequestOptions
-    ) => this.makeApiRequest<Response>('POST', url, requestOptions);
+    ) =>
+        this.wretch
+            .headers(this.getHeaders(requestOptions))
+            .options({
+                ...requestOptions?.extraRequestOptions
+            })
+            .post(requestOptions?.data, url)
+            .json<Response>();
 
-    private getHeaders(
-        requestOptions?: InternalRequestOptions
-    ): CNaughtHeadersInit {
-        const headers: CNaughtHeadersInit = {};
+    private getHeaders(requestOptions?: InternalRequestOptions): HeadersInit {
+        const headers: HeadersInit = {};
         if (requestOptions?.idempotencyKey) {
             headers['Idempotency-Key'] = requestOptions.idempotencyKey;
         }

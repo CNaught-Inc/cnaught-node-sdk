@@ -87,7 +87,7 @@ export class CNaughtApiClient {
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<GenericOrder> =>
         this.apiHandler.makeApiGetRequest<GenericOrder>(
-            `orders/${id}`,
+            `/orders/${id}`,
             requestOptions
         );
 
@@ -117,7 +117,7 @@ export class CNaughtApiClient {
 
         const query = `?${params.join('&')}`;
         return await this.apiHandler.makeApiGetRequest<List<GenericOrder>>(
-            `orders${params.length > 0 ? query : ''}`,
+            `/orders${params.length > 0 ? query : ''}`,
             requestOptions
         );
     };
@@ -137,7 +137,7 @@ export class CNaughtApiClient {
             SubaccountRequestOptions &
             ApiRequestOptions
     ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiPostRequest<GenericOrder>('orders', {
+        this.apiHandler.makeApiPostRequest<GenericOrder>('/orders', {
             ...requestOptions,
             data: options
         });
@@ -157,7 +157,7 @@ export class CNaughtApiClient {
             SubaccountRequestOptions &
             ApiRequestOptions
     ): Promise<RideOrder> =>
-        this.apiHandler.makeApiPostRequest<RideOrder>('orders/ride', {
+        this.apiHandler.makeApiPostRequest<RideOrder>('/orders/ride', {
             ...requestOptions,
             data: options
         });
@@ -178,7 +178,7 @@ export class CNaughtApiClient {
             ApiRequestOptions
     ): Promise<GenericOrder> =>
         this.apiHandler.makeApiPostRequest<GenericOrder>(
-            `orders/${id}/cancel`,
+            `/orders/${id}/cancel`,
             requestOptions
         );
 
@@ -194,7 +194,7 @@ export class CNaughtApiClient {
         params: GenericQuoteParams,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<OffsetsQuote> =>
-        this.apiHandler.makeApiPostRequest<OffsetsQuote>('quotes', {
+        this.apiHandler.makeApiPostRequest<OffsetsQuote>('/quotes', {
             ...requestOptions,
             data: params
         });
@@ -211,7 +211,7 @@ export class CNaughtApiClient {
         params: RideQuoteParams,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<OffsetsQuote> =>
-        this.apiHandler.makeApiPostRequest<OffsetsQuote>('quotes/ride', {
+        this.apiHandler.makeApiPostRequest<OffsetsQuote>('/quotes/ride', {
             ...requestOptions,
             data: params
         });
@@ -228,7 +228,7 @@ export class CNaughtApiClient {
         options: SubaccountOptions,
         requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
     ): Promise<Subaccount> =>
-        this.apiHandler.makeApiPostRequest<Subaccount>('subaccounts', {
+        this.apiHandler.makeApiPostRequest<Subaccount>('/subaccounts', {
             ...requestOptions,
             data: options
         });
@@ -245,7 +245,7 @@ export class CNaughtApiClient {
         requestOptions?: ApiRequestOptions
     ): Promise<Subaccount> =>
         this.apiHandler.makeApiGetRequest<Subaccount>(
-            `subaccounts/${id}`,
+            `/subaccounts/${id}`,
             requestOptions
         );
 
@@ -274,7 +274,7 @@ export class CNaughtApiClient {
 
         const query = `?${params.join('&')}`;
         return await this.apiHandler.makeApiGetRequest<List<Subaccount>>(
-            `subaccounts${params.length > 0 ? query : ''}`,
+            `/subaccounts${params.length > 0 ? query : ''}`,
             requestOptions
         );
     };
@@ -290,7 +290,7 @@ export class CNaughtApiClient {
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<ImpactData> =>
         this.apiHandler.makeApiGetRequest<ImpactData>(
-            'impact/data',
+            '/impact/data',
             requestOptions
         );
 
@@ -305,7 +305,7 @@ export class CNaughtApiClient {
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<ImpactHostedPageConfig> =>
         this.apiHandler.makeApiGetRequest<ImpactHostedPageConfig>(
-            'impact/hosted-page-config',
+            '/impact/hosted-page-config',
             requestOptions
         );
 }
