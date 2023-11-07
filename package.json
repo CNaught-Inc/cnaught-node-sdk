@@ -6,9 +6,9 @@
   "files": ["dist/**"],
   "type": "module",
   "scripts": {
-    "build": "genversion --es6 src/version.ts tsc",
+    "build": "genversion --es6 src/version.ts && tsc",
     "unit-test": "jest -c jest.config.unit.js",
-    "integration-test": "node build_release_package_json.js && jest -c ./jest.config.integration.js",
+    "integration-test": "jest -c ./jest.config.integration.js",
     "lint": "eslint -c .eslintrc_unused.js --ext .ts \\\".\\\"",
     "lint-fix": "eslint --fix -c .eslintrc_unused.js --ext .ts \\\".\\\""
   },
