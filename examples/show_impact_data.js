@@ -55,6 +55,9 @@ import 'dotenv/config';
         }
 
         const impactData = await client.getImpactData({ subaccountId });
+        const impactHostedPageConfig = await client.getImpactHostedPageConfig({
+            subaccountId
+        });
         console.log(
             `${impactData.name} has offset a total amount of ${impactData.total_offset_kgs} kg CO2e since ${impactData.since_date}`
         );
@@ -80,6 +83,9 @@ import 'dotenv/config';
                 );
             });
         });
+        console.log(
+            `|- You can see more information at ${impactHostedPageConfig.url}`
+        );
     } catch (err) {
         if (err instanceof CNaughtError) {
             switch (err.problemDetails.type) {
