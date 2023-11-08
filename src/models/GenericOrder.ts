@@ -16,5 +16,6 @@ export interface GenericOrder {
     callback_url?: string;
     certificate_public_url?: string;
     certificate_download_public_url?: string;
+    subaccount_id?: string;
     project_allocations: ProjectAllocation[];
 }
