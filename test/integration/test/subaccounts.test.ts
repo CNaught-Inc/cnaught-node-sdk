@@ -8,6 +8,7 @@ test('Can create retrieve subaccount', async () => {
     const retrievedSub = await client.getSubaccountDetails(sub.id);
 
     expect(sub.name).toBe(subaccountName);
+    expect(sub.created_on).not.toEqual(null);
     expect(retrievedSub.name).toBe(subaccountName);
 }, 30000);
 

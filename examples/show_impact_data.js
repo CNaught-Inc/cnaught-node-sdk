@@ -9,10 +9,7 @@ import 'dotenv/config';
 
 (async () => {
     // Initialize your client with your CNaught API key
-    const client = new CNaughtApiClient(process.env.CNAUGHT_API_KEY, {
-        hostname: 'api-local.cnaught.com',
-        port: 3011
-    });
+    const client = new CNaughtApiClient(process.env.CNAUGHT_API_KEY);
 
     try {
         const subaccounts = await client.getListOfSubaccounts();
