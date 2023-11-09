@@ -40,7 +40,7 @@ describe('api-client', () => {
         it('sets default headers and method', async () => {
             fetchMock.mockOnce(JSON.stringify({}));
 
-            const res = await sut.makeApiGetRequest('/somepath');
+            await sut.makeApiGetRequest('/somepath');
 
             expect(fetchMock.mock.calls.length).toEqual(1);
             expect(fetchMock.mock.calls[0][1]).toEqual({
@@ -56,7 +56,7 @@ describe('api-client', () => {
         it('passes additional params when used', async () => {
             fetchMock.mockOnce(JSON.stringify({}));
 
-            const res = await sut.makeApiGetRequest('/somepath', {
+            await sut.makeApiGetRequest('/somepath', {
                 subaccountId: 'MY-SUBACCOUNT',
                 extraRequestOptions: {
                     next: { revalidate: 1000 }
@@ -173,7 +173,7 @@ describe('api-client', () => {
         it('passes additional params when used', async () => {
             fetchMock.mockOnce(JSON.stringify({}));
 
-            const res = await sut.makeApiPostRequest('/postpath2', null, {
+            await sut.makeApiPostRequest('/postpath2', null, {
                 subaccountId: 'MY-SUBACCOUNT',
                 idempotencyKey: 'MY-IDEMPOTENCY-KEY',
                 extraRequestOptions: {

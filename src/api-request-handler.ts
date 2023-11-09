@@ -59,7 +59,7 @@ export class ApiRequestHandler {
                 'User-Agent': `CNaught-NodeSDK/${version}`
             })
             .errorType('json')
-            .catcherFallback((error, req) => {
+            .catcherFallback((error) => {
                 if (!error.json) {
                     throw error;
                 }

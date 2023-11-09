@@ -1,5 +1,4 @@
 import { getApiClient } from '../src/client-helper.js';
-import { CNaughtError } from '../../../src/models/index.js';
 const client = getApiClient();
 
 beforeAll(async () => {
