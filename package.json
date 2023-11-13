@@ -1,15 +1,16 @@
 {
   "name": "@cnaught/cnaught-node-sdk",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "CNaught Carbon Offsets API - Node SDK",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "files": ["dist/**"],
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "build-examples": "tsc && cd ./examples && npm install && rm -r ./node_modules/@cnaught/cnaught-node-sdk/src && cp -r ../dist/src ./node_modules/@cnaught/cnaught-node-sdk",
-    "unit-test": "jest -c ./jest.config.unit.js",
-    "integration-test": "node build_release_package_json.js && jest -c ./jest.config.integration.js",
-    "lint": "eslint -c .eslintrc.js --ext .ts \".\"",
-    "lint-fix": "eslint --fix -c .eslintrc.js --ext .ts \".\""
+    "build": "genversion --es6 src/version.ts && tsc",
+    "unit-test": "jest -c jest.config.unit.js",
+    "integration-test": "jest -c ./jest.config.integration.js",
+    "lint": "eslint -c .eslintrc.yaml --ext .ts \".\"",
+    "lint-fix": "eslint --fix -c .eslintrc.yaml --ext .ts \".\""
   },
   "repository": {
     "type": "git",
@@ -31,22 +32,29 @@
     "url": "https://github.com/cnaught-inc/cnaught-node-sdk/issues"
   },
   "homepage": "https://github.com/cnaught-inc/cnaught-node-sdk#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "axios": "^0.21.1",
-    "src": "^1.1.2"
+    "http-problem-details-parser": "^0.0.2",
+    "wretch": "^2.7.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.13",
-    "@types/node": "^12.20.55",
-    "@typescript-eslint/eslint-plugin": "^5.29.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^5.29.0",
-    "@typescript-eslint/parser": "^5.29.0",
+    "@types/node": "^18.18.9",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
     "dotenv": "^16.0.1",
     "eslint": "^8.18.0",
+    "eslint-config-prettier": "8.1.0",
     "eslint-plugin-import": "^2.26.0",
-    "jest": "^28.1.3",
-    "ts-jest": "^28.0.8",
-    "typescript": "^4.7.4"
+    "genversion": "^3.1.1",
+    "jest": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   },
   "jest": {
     "projects": [
@@ -54,4 +62,4 @@
       "./jest.config.integration.js"
     ]
   }
-} 
+}

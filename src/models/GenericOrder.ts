@@ -1,6 +1,6 @@
-import { OrderState } from './OrderState';
-import { OrderType } from './OrderType';
-import { ProjectAllocation } from './ProjectAllocation';
+import type { OrderState } from './OrderState.js';
+import type { OrderType } from './OrderType.js';
+import type { ProjectAllocation } from './ProjectAllocation.js';
 
 /** Generic Offset order for a given amount of CO2 */
 export interface GenericOrder {
@@ -16,5 +16,6 @@ export interface GenericOrder {
     callback_url?: string;
     certificate_public_url?: string;
     certificate_download_public_url?: string;
+    subaccount_id?: string;
     project_allocations: ProjectAllocation[];
 }

@@ -1,4 +1,4 @@
-import { NotificationConfig } from './NotificationConfig';
+import type { NotificationConfig } from './NotificationConfig.js';
 
 export interface BaseOrderOptions {
     metadata?: string;
@@ -6,4 +6,3 @@ export interface BaseOrderOptions {
     notification_config?: NotificationConfig;
     portfolio_id?: string;
 }
-

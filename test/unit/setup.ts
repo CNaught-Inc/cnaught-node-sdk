@@ -1,3 +1,3 @@
-jest.mock('axios', () => {
-    return require('./mocks/axios-mock');
-});
+import { enableFetchMocks } from 'jest-fetch-mock';
+
+enableFetchMocks();

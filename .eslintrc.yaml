@@ -1,0 +1,43 @@
+---
+root: true
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
+  - prettier
+parser: '@typescript-eslint/parser'
+parserOptions:
+  sourceType: module
+plugins:
+  - '@typescript-eslint'
+env:
+  browser: true
+  es6: true
+  node: true
+overrides:
+  - files:
+    - "**/*.spec.js"
+    - "**/*.test.js"
+    - "**/*.spec.jsx"
+    env:
+      jest: true
+rules:
+  no-console: 0
+  func-style: 2
+  consistent-return: 2
+  prefer-arrow-callback:
+    - 2
+    - allowNamedFunctions: false
+      allowUnboundThis: false
+  comma-dangle:
+    - 2
+    - never
+  no-trailing-spaces: 2
+  '@typescript-eslint/no-explicit-any': 0
+  '@typescript-eslint/no-empty-interface': 0
+  '@typescript-eslint/explicit-function-return-type': 0
+  '@typescript-eslint/camelcase': 0
+  '@typescript-eslint/no-empty-function': 0
+  '@typescript-eslint/no-unused-vars':
+    - 2
+    - varsIgnorePattern: ^_

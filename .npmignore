@@ -9,4 +9,4 @@
 !/README.md
 !/VERSION
 !/package.json
-!/src/**/*
+!/dist/**/*
