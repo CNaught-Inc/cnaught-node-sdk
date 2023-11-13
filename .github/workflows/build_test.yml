@@ -29,7 +29,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x, 20.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -48,7 +48,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x, 20.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -58,7 +58,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build --if-present
-    - run: node build_release_package_json.js
     - name: Integration tests ${{ matrix.node-version }}
       env:
         API_KEY: ${{ secrets.API_KEY }}
