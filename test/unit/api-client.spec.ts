@@ -74,6 +74,7 @@ describe('api-client', () => {
     const subaccountDetails: Subaccount = {
         id: subaccountId,
         name: 'My subaccount',
+        created_on: '2023-11-13T18:33:58.494127Z',
         default_portfolio_id: 'ABC'
     };
 
@@ -584,6 +585,7 @@ describe('api-client', () => {
         it('get list of subaccounts with limit of 5', async () => {
             const subaccountsDetails2: Subaccount = {
                 id: otherSubaccountId,
+                created_on: '2023-11-13T18:33:58.494127Z',
                 name: 'Other subaccount'
             };
             const data = [subaccountDetails, subaccountsDetails2];
@@ -622,6 +624,7 @@ describe('api-client', () => {
             const limit = 5;
             const subaccountsDetails2: Subaccount = {
                 id: otherSubaccountId,
+                created_on: '2023-11-13T18:33:58.494127Z',
                 name: 'Other subaccount'
             };
             const data = [subaccountDetails, subaccountsDetails2];
