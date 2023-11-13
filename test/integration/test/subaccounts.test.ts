@@ -1,9 +1,10 @@
 import { getApiClient } from '../src/client-helper.js';
+import { randomUUID } from 'crypto';
 
 test('Can create retrieve subaccount', async () => {
     const client = getApiClient();
 
-    const subaccountName = crypto.randomUUID();
+    const subaccountName = randomUUID();
     const sub = await client.createSubaccount({ name: subaccountName });
     const retrievedSub = await client.getSubaccountDetails(sub.id);
 
@@ -15,7 +16,7 @@ test('Can create retrieve subaccount', async () => {
 test('can place and retrieve orders for subaccount', async () => {
     const client = getApiClient();
 
-    const sub = await client.createSubaccount({ name: crypto.randomUUID() });
+    const sub = await client.createSubaccount({ name: randomUUID() });
     const order = await client.placeGenericOrder(
         {
             amount_kg: 10

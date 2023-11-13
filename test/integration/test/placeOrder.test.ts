@@ -4,6 +4,7 @@ import {
     OrderState,
     OrderType
 } from '../../../src/models/index.js';
+import { randomUUID } from 'crypto';
 
 test('Cannot place generic order with negative amount', async () => {
     const client = getApiClient();
@@ -74,7 +75,7 @@ test('Placing generic order twice with same idempotency key returns replay', asy
             url: callback
         }
     };
-    const requestOpts = { idempotencyKey: crypto.randomUUID() };
+    const requestOpts = { idempotencyKey: randomUUID() };
     const order = await client.placeGenericOrder(orderOpts, requestOpts);
     const order2 = await client.placeGenericOrder(orderOpts, requestOpts);
 
@@ -94,7 +95,7 @@ test('Placing generic order twice with same idempotency key but different payloa
             url: callback
         }
     };
-    const requestOpts = { idempotencyKey: crypto.randomUUID() };
+    const requestOpts = { idempotencyKey: randomUUID() };
     await client.placeGenericOrder(orderOpts, requestOpts);
     orderOpts.metadata = orderOpts.metadata + ' changed';
 
@@ -179,7 +180,7 @@ test('Submitting ride order twice with same idempotency key returns replay', asy
             url: callback
         }
     };
-    const requestOpts = { idempotencyKey: crypto.randomUUID() };
+    const requestOpts = { idempotencyKey: randomUUID() };
     const order = await client.placeRideOrder(orderOpts, requestOpts);
     const order2 = await client.placeRideOrder(orderOpts, requestOpts);
 
@@ -199,7 +200,7 @@ test('Placing ride order twice with same idempotency key but different payload r
             url: callback
         }
     };
-    const requestOpts = { idempotencyKey: crypto.randomUUID() };
+    const requestOpts = { idempotencyKey: randomUUID() };
     await client.placeRideOrder(orderOpts, requestOpts);
     orderOpts.metadata = orderOpts.metadata + ' changed';
 
