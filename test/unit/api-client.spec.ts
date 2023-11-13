@@ -113,7 +113,7 @@ describe('api-client', () => {
 
     const impactHostedPageConfig: ImpactHostedPageConfig = {
         enabled: true,
-        enabled_sections: ['homes', 'cars'],
+        enabled_equivalents: ['homes', 'cars'],
         url: 'https://example.com'
     };
 

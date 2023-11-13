@@ -5,7 +5,7 @@ test('Can retrieve impact config', async () => {
     const impactConfig = await client.getImpactHostedPageConfig(); // well known order
     expect(impactConfig.enabled).toBe(true);
     expect(impactConfig.url).toMatch(/^https:\/\/impact.cnaught.com\/.*/);
-    expect(impactConfig.enabled_sections).toEqual([
+    expect(impactConfig.enabled_equivalents).toEqual([
         'cars',
         'homes',
         'flights',
