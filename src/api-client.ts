@@ -16,10 +16,10 @@ import type {
     ImpactData,
     ImpactHostedPageConfig,
     Project,
-    ProjectCategory
+    ProjectCategoryWithProjects,
+    Portfolio,
+    PortfolioWithCategoryAllocations
 } from './models/index.js';
-import type { PortfolioWithCategoryAllocations } from './models/PortfolioWithCategoryAllocations.js';
-import type { Portfolio } from './models/Portfolio.js';
 
 export interface CNaughtApiClientOptions {
     /**
@@ -345,8 +345,8 @@ export class CNaughtApiClient {
     getProjectCategoryDetails = (
         id: string,
         requestOptions?: ApiRequestOptions
-    ): Promise<ProjectCategory> =>
-        this.apiHandler.makeApiGetRequest<ProjectCategory>(
+    ): Promise<ProjectCategoryWithProjects> =>
+        this.apiHandler.makeApiGetRequest<ProjectCategoryWithProjects>(
             `/project-categories/${id}`,
             requestOptions
         );

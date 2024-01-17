@@ -8,7 +8,9 @@ import type {
     SubaccountOptions,
     Subaccount,
     ImpactData,
-    ImpactHostedPageConfig
+    ImpactHostedPageConfig,
+    Project,
+    ProjectCategoryWithProjects
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -116,6 +118,24 @@ describe('api-client', () => {
         enabled: true,
         enabled_equivalents: ['homes', 'cars'],
         url: 'https://example.com'
+    };
+
+    const projectId = 'project-id';
+    const projectDetails: Project = {
+        id: projectId,
+        name: 'Some project',
+        type: 'ARR',
+        un_sdg_goals: [],
+        developer: 'Test Developer'
+    };
+
+    const projectCategoryId = 'project-category-id';
+    const projectCategoryDetails: ProjectCategoryWithProjects = {
+        id: projectId,
+        name: 'Some project category',
+        description: 'Text description',
+        primary_image_url: 'http://example.org/image',
+        projects: [projectDetails]
     };
 
     beforeEach(() => {
@@ -718,6 +738,38 @@ describe('api-client', () => {
             );
             expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(res).toEqual(impactHostedPageConfig);
+        });
+    });
+
+    describe('getProjectDetails', () => {
+        it('get project by id', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(projectDetails);
+
+            const project = await sut.getProjectDetails(projectId);
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/projects/${projectDetails.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(project).toEqual(projectDetails);
+        });
+    });
+
+    describe('getProjectCategoryDetails', () => {
+        it('get project category by id', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(projectCategoryDetails);
+
+            const projectCategory = await sut.getProjectCategoryDetails(
+                projectCategoryId
+            );
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/project-categories/${projectCategoryDetails.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(projectCategory).toEqual(projectCategoryDetails);
         });
     });
 });
