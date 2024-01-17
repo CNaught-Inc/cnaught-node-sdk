@@ -14,8 +14,12 @@ import type {
     SubaccountRequestOptions,
     Subaccount,
     ImpactData,
-    ImpactHostedPageConfig
+    ImpactHostedPageConfig,
+    Project,
+    ProjectCategory
 } from './models/index.js';
+import type { PortfolioWithCategoryAllocations } from './models/PortfolioWithCategoryAllocations.js';
+import type { Portfolio } from './models/Portfolio.js';
 
 export interface CNaughtApiClientOptions {
     /**
@@ -312,6 +316,68 @@ export class CNaughtApiClient {
     ): Promise<ImpactHostedPageConfig> =>
         this.apiHandler.makeApiGetRequest<ImpactHostedPageConfig>(
             '/impact/hosted-page-config',
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/GetProjectById
+     * Get details for a project
+     * @param id Id of the project whose details are to be retrieved
+     * @param requestOptions Optional additional request options, e.g. for transforming the Request before sending
+     * @returns Project details
+     */
+    getProjectDetails = (
+        id: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<Project> =>
+        this.apiHandler.makeApiGetRequest<Project>(
+            `/projects/${id}`,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/GetProjectCategoryById
+     * Get details for a project category
+     * @param id Id of the project category whose details are to be retrieved
+     * @param requestOptions Optional additional request options, e.g. for transforming the Request before sending
+     * @returns Project category details
+     */
+    getProjectCategoryDetails = (
+        id: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<ProjectCategory> =>
+        this.apiHandler.makeApiGetRequest<ProjectCategory>(
+            `/project-categories/${id}`,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/GetPortfolioById
+     * Get details for a portfolio
+     * @param id Id of the portfolio whose details are to be retrieved
+     * @param requestOptions Optional additional request options, e.g. for transforming the Request before sending
+     * @returns Portfolio details
+     */
+    getPortfolioDetails = (
+        id: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<PortfolioWithCategoryAllocations> =>
+        this.apiHandler.makeApiGetRequest<PortfolioWithCategoryAllocations>(
+            `/portfolios/${id}`,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/GetListOfPortfolios
+     * Get the list of portfolios the user has access to
+     * @param requestOptions Optional additional request options, e.g. for transforming the Request before sending
+     * @returns List of portfolios
+     */
+    getListOfPortfolios = (
+        requestOptions?: ApiRequestOptions
+    ): Promise<List<Portfolio>> =>
+        this.apiHandler.makeApiGetRequest<List<Portfolio>>(
+            `/portfolios`,
             requestOptions
         );
 }
