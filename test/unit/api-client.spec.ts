@@ -11,7 +11,9 @@ import type {
     ImpactHostedPageConfig,
     Project,
     ProjectCategoryWithProjects,
-    PortfolioWithCategoryAllocations
+    PortfolioWithCategoryAllocations,
+    Portfolio,
+    List
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -801,6 +803,23 @@ describe('api-client', () => {
             );
             expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(portfolio).toEqual(portfolioDetails);
+        });
+    });
+
+    describe('getListOfPortfolios', () => {
+        it('get list of portfolios', async () => {
+            mockMakeApiGetRequest.mockResolvedValue({
+                data: [portfolioDetails]
+            } satisfies List<Portfolio>);
+
+            const portfolios = await sut.getListOfPortfolios();
+
+            expect(portfolios).toEqual({ data: [portfolios] });
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                '/portfolios',
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
     });
 });
