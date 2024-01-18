@@ -56,7 +56,7 @@ test('Can submit generic order with portfolio ID', async () => {
         notification_config: {
             url: callback
         },
-        portfolio_id: 'XYZ' // on sandbox, portfolio ids are accepted but ignored
+        portfolio_id: 'ixmZSK' // well-known portfolio id
     });
 
     expect(order.state).toBe(OrderState.Placed);
@@ -145,8 +145,8 @@ test('Can submit ride order', async () => {
     expect(order.created_on).not.toBeNull();
     expect(order.metadata).toBe(metadata);
     expect(order.callback_url).toBe(callback);
-    expect(order.amount_kg).toBe(7.235);
-    expect(order.price_usd_cents).toBe(14);
+    expect(order.amount_kg).toBe(8);
+    expect(order.price_usd_cents).toBe(16);
     expect(order.type).toBe(OrderType.Ride);
 }, 30000);
 
@@ -161,7 +161,7 @@ test('Can submit ride order with portfolio id', async () => {
         notification_config: {
             url: callback
         },
-        portfolio_id: 'XYZ' // on sandbox, portfolio ids are accepted but ignored
+        portfolio_id: 'ixmZSK' // well-known portfolio id
     });
 
     expect(order.state).toBe(OrderState.Placed);

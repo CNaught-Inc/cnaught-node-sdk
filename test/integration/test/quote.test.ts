@@ -48,6 +48,6 @@ test('Returns correct amount for ride quote', async () => {
 
     const quote = await client.getRideQuote({ distance_km: 30 });
 
-    expect(quote.amount_kg).toBe(7.2342);
-    expect(quote.price_usd_cents).toBe(14);
+    expect(quote.amount_kg).toBe(8);
+    expect(quote.price_usd_cents).toBe(16);
 }, 30000);

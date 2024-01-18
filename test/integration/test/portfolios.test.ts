@@ -46,6 +46,7 @@ test('get portfolios', async () => {
     const portfolios = await client.getListOfPortfolios(); // well-known set of portfolios
 
     expect(portfolios.data).toHaveLength(2);
+    expect(portfolios.data[0].id).toBe('oH5hlq');
     expect(portfolios.data[0].name).toBe('Sandbox');
     expect(portfolios.data[0].summary).toBe(
         'This portfolio is for sandbox use only and does not represent any real projects'
@@ -54,5 +55,6 @@ test('get portfolios', async () => {
         'This portfolio is for sandbox use only and does not represent any real projects'
     );
     expect(portfolios.data[0].primary_image_url).toBeNull();
+    expect(portfolios.data[1].id).toBe('ixmZSK');
     expect(portfolios.data[1].name).toBe('Alternative Sandbox');
 }, 30000);
