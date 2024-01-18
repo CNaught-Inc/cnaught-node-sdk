@@ -26,7 +26,7 @@ test('get portfolio by id', async () => {
         'This category is for sandbox use only and does not represent any real data.'
     );
     expect(portfolio.category_allocations[0].category.primary_image_url).toBe(
-        'https://assets-stage.cnaught.com/64fd900fcf6f93409fc7ff21/6524ae6d35a66c6068f6bbe1_64cabe99f9ba36af8ecb171c_impact-portfolio.jpeg'
+        'https://assets.cnaught.com/64fd900fcf6f93409fc7ff21/6524ae6d35a66c6068f6bbe1_64cabe99f9ba36af8ecb171c_impact-portfolio.jpeg'
     );
     expect(portfolio.category_allocations[0].category.projects).toHaveLength(1);
     expect(portfolio.category_allocations[0].category.projects[0].name).toBe(
