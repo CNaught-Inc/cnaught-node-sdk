@@ -10,7 +10,8 @@ import type {
     ImpactData,
     ImpactHostedPageConfig,
     Project,
-    ProjectCategoryWithProjects
+    ProjectCategoryWithProjects,
+    PortfolioWithCategoryAllocations
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -136,6 +137,21 @@ describe('api-client', () => {
         description: 'Text description',
         primary_image_url: 'http://example.org/image',
         projects: [projectDetails]
+    };
+
+    const portfolioId = 'portfolio-id';
+    const portfolioDetails: PortfolioWithCategoryAllocations = {
+        id: portfolioId,
+        name: 'Some portfolio',
+        summary: 'Some summary',
+        description: 'Some description',
+        primary_image_url: 'http://example.org/image',
+        category_allocations: [
+            {
+                category: projectCategoryDetails,
+                allocated_fraction: 1.0
+            }
+        ]
     };
 
     beforeEach(() => {
@@ -770,6 +786,21 @@ describe('api-client', () => {
             );
             expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(projectCategory).toEqual(projectCategoryDetails);
+        });
+    });
+
+    describe('getPortfolioDetails', () => {
+        it('get portfolio by id', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(portfolioDetails);
+
+            const portfolio = await sut.getPortfolioDetails(portfolioId);
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/portfolios/${portfolio.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(portfolio).toEqual(portfolioDetails);
         });
     });
 });
