@@ -814,7 +814,7 @@ describe('api-client', () => {
 
             const portfolios = await sut.getListOfPortfolios();
 
-            expect(portfolios).toEqual({ data: [portfolios] });
+            expect(portfolios).toEqual({ data: [portfolioDetails] });
             expect(mockMakeApiGetRequest).toBeCalledWith(
                 '/portfolios',
                 undefined
