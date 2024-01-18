@@ -134,7 +134,7 @@ describe('api-client', () => {
 
     const projectCategoryId = 'project-category-id';
     const projectCategoryDetails: ProjectCategoryWithProjects = {
-        id: projectId,
+        id: projectCategoryId,
         name: 'Some project category',
         description: 'Text description',
         primary_image_url: 'http://example.org/image',
