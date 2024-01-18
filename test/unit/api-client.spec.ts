@@ -8,7 +8,12 @@ import type {
     SubaccountOptions,
     Subaccount,
     ImpactData,
-    ImpactHostedPageConfig
+    ImpactHostedPageConfig,
+    Project,
+    ProjectCategoryWithProjects,
+    PortfolioWithCategoryAllocations,
+    Portfolio,
+    List
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -116,6 +121,39 @@ describe('api-client', () => {
         enabled: true,
         enabled_equivalents: ['homes', 'cars'],
         url: 'https://example.com'
+    };
+
+    const projectId = 'project-id';
+    const projectDetails: Project = {
+        id: projectId,
+        name: 'Some project',
+        type: 'ARR',
+        un_sdg_goals: [],
+        developer: 'Test Developer'
+    };
+
+    const projectCategoryId = 'project-category-id';
+    const projectCategoryDetails: ProjectCategoryWithProjects = {
+        id: projectCategoryId,
+        name: 'Some project category',
+        description: 'Text description',
+        primary_image_url: 'http://example.org/image',
+        projects: [projectDetails]
+    };
+
+    const portfolioId = 'portfolio-id';
+    const portfolioDetails: PortfolioWithCategoryAllocations = {
+        id: portfolioId,
+        name: 'Some portfolio',
+        summary: 'Some summary',
+        description: 'Some description',
+        primary_image_url: 'http://example.org/image',
+        category_allocations: [
+            {
+                category: projectCategoryDetails,
+                allocated_fraction: 1.0
+            }
+        ]
     };
 
     beforeEach(() => {
@@ -718,6 +756,70 @@ describe('api-client', () => {
             );
             expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(res).toEqual(impactHostedPageConfig);
+        });
+    });
+
+    describe('getProjectDetails', () => {
+        it('get project by id', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(projectDetails);
+
+            const project = await sut.getProjectDetails(projectId);
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/projects/${projectDetails.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(project).toEqual(projectDetails);
+        });
+    });
+
+    describe('getProjectCategoryDetails', () => {
+        it('get project category by id', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(projectCategoryDetails);
+
+            const projectCategory = await sut.getProjectCategoryDetails(
+                projectCategoryId
+            );
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/project-categories/${projectCategoryDetails.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(projectCategory).toEqual(projectCategoryDetails);
+        });
+    });
+
+    describe('getPortfolioDetails', () => {
+        it('get portfolio by id', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(portfolioDetails);
+
+            const portfolio = await sut.getPortfolioDetails(portfolioId);
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/portfolios/${portfolio.id}`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(portfolio).toEqual(portfolioDetails);
+        });
+    });
+
+    describe('getListOfPortfolios', () => {
+        it('get list of portfolios', async () => {
+            mockMakeApiGetRequest.mockResolvedValue({
+                data: [portfolioDetails]
+            } satisfies List<Portfolio>);
+
+            const portfolios = await sut.getListOfPortfolios();
+
+            expect(portfolios).toEqual({ data: [portfolioDetails] });
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                '/portfolios',
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
         });
     });
 });

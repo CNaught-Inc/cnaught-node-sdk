@@ -9,7 +9,9 @@ import 'dotenv/config';
 
 (async () => {
     // Initialize your client with your CNaught API key
-    const client = new CNaughtApiClient(process.env.CNAUGHT_API_KEY);
+    const client = new CNaughtApiClient(process.env.CNAUGHT_API_KEY, {
+        hostname: 'api-stage.cnaught.com'
+    });
 
     try {
         const subaccounts = await client.getListOfSubaccounts();
@@ -58,30 +60,30 @@ import 'dotenv/config';
         console.log(
             `${impactData.name} has offset a total amount of ${impactData.total_offset_kgs} kg CO2e since ${impactData.since_date}`
         );
-        console.log('|- This is the same as');
+        console.log('   This is the same as');
         console.log(
-            `|--- ${impactData.equivalents.cars_off_the_road} cars off the road`
+            `     ${impactData.equivalents.cars_off_the_road} cars off the road`
         );
         console.log(
-            `|--- ${impactData.equivalents.flights_lax_to_nyc} flights from LA to New York`
+            `     ${impactData.equivalents.flights_lax_to_nyc} flights from LA to New York`
         );
         console.log(
-            `|--- ${impactData.equivalents.trees_planted} trees planted`
+            `     ${impactData.equivalents.trees_planted} trees planted`
         );
         console.log(
-            `|--- ${impactData.equivalents.homes_annual_energy_usage} homes' annual energy usage`
+            `     ${impactData.equivalents.homes_annual_energy_usage} homes' annual energy usage`
         );
-        console.log('|- Category details');
+        console.log('   Category details');
         impactData.categories.forEach((c) => {
-            console.log(`|--- ${c.category.name}: ${c.offset_kgs} kg CO2e`);
+            console.log(`     ${c.category.name}: ${c.offset_kgs} kg CO2e`);
             c.projects.forEach((p) => {
                 console.log(
-                    `|----- ${p.project.name}: ${p.offset_kgs} kg CO2e`
+                    `       ${p.project.name}: ${p.offset_kgs} kg CO2e`
                 );
             });
         });
         console.log(
-            `|- You can see more information at ${impactHostedPageConfig.url}`
+            `   You can see more information at ${impactHostedPageConfig.url}`
         );
     } catch (err) {
         if (err instanceof CNaughtError) {

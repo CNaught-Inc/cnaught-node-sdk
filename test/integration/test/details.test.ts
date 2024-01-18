@@ -19,11 +19,30 @@ test('Fulfilled order', async () => {
     const client = getApiClient();
     const orderDetails = await client.getOrderDetails('2FhU3B0F36_sandbox'); // well known order
     expect(orderDetails.amount_kg).toEqual(3000);
-    expect(orderDetails.project_allocations).toHaveLength(3);
+    expect(orderDetails.project_allocations).toHaveLength(4);
+    orderDetails.project_allocations.sort((a, b) =>
+        a.project.name.localeCompare(b.project.name)
+    );
+
+    expect(orderDetails.project_allocations[0].project.name).toBe(
+        'Sandbox Project A'
+    );
+    expect(orderDetails.project_allocations[0].amount_kg).toBe(1050);
+    expect(orderDetails.project_allocations[1].project.name).toBe(
+        'Sandbox Project B'
+    );
+    expect(orderDetails.project_allocations[1].amount_kg).toBe(1050);
+    expect(orderDetails.project_allocations[2].project.name).toBe(
+        'Sandbox Project C'
+    );
+    expect(orderDetails.project_allocations[2].amount_kg).toBe(600);
+    expect(orderDetails.project_allocations[3].project.name).toBe(
+        'Sandbox Project D'
+    );
+    expect(orderDetails.project_allocations[3].amount_kg).toBe(300);
     orderDetails.project_allocations.forEach((pa) => {
-        expect(pa.amount_kg).toEqual(1000);
-        expect(pa.project.name).toMatch(/^CNaught Sandbox Project/);
-        expect(pa.project.developer).toEqual('CNaught Sandbox Developer');
+        expect(pa.project.name).toMatch(/^Sandbox Project/);
+        expect(pa.project.developer).toEqual('Sandbox Project Developer');
         expect(pa.project.location_name).toEqual('Net Zero, Future');
         expect(pa.project.summary).toEqual('Not a real project');
         expect(pa.project.description).toEqual(

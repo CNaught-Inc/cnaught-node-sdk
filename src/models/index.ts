@@ -21,4 +21,7 @@ export * from './RideQuoteParams.js';
 export * from './Project.js';
 export * from './ProjectAllocation.js';
 export * from './ProjectCategory.js';
+export * from './ProjectCategoryWithProjects.js';
+export * from './Portfolio.js';
+export * from './PortfolioWithCategoryAllocations.js';
 export * from './IdempotencyRequestOptions.js';
