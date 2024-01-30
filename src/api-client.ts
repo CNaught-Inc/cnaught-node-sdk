@@ -259,7 +259,7 @@ export class CNaughtApiClient {
     updateSubaccount = (
         id: string,
         options: UpdateSubaccountOptions,
-        requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
+        requestOptions?: ApiRequestOptions
     ): Promise<Subaccount> =>
         this.apiHandler.makeApiPutRequest<Subaccount>(
             `/subaccounts/${id}`,
@@ -279,7 +279,7 @@ export class CNaughtApiClient {
     updateSubaccountLogoFromUrl = (
         id: string,
         logoOptions: SubaccountLogoUrlOptions,
-        requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
+        requestOptions?: ApiRequestOptions
     ): Promise<Subaccount> =>
         this.apiHandler.makeApiPostRequest<Subaccount>(
             `/subaccounts/${id}/logo`,
@@ -299,7 +299,7 @@ export class CNaughtApiClient {
     updateSubaccountLogoFromImageData = (
         id: string,
         options: SubaccountLogoFileOptions,
-        requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
+        requestOptions?: ApiRequestOptions
     ): Promise<Subaccount> =>
         this.apiHandler.makeApiPutRequest<Subaccount>(
             `/subaccounts/${id}/logo`,
@@ -325,7 +325,7 @@ export class CNaughtApiClient {
      */
     removeSubaccountLogo = (
         id: string,
-        requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
+        requestOptions?: ApiRequestOptions
     ): Promise<Subaccount> =>
         this.apiHandler.makeApiDeleteRequest<Subaccount>(
             `/subaccounts/${id}/logo`,
