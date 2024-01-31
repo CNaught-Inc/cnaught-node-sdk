@@ -3,6 +3,7 @@
     "dependencies": {
         "@cnaught/cnaught-node-sdk": "file:..",
         "dotenv": "^16.0.1",
-        "inquirer": "^8.0.0"
+        "inquirer": "^9.0.0",
+        "inquirer-file-tree-selection-prompt": "^2.0.5"
     }
 }
