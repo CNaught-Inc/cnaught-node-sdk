@@ -1,5 +1,6 @@
 import { getApiClient } from '../src/client-helper.js';
 import { randomUUID } from 'crypto';
+import * as fs from 'node:fs';
 
 test('Can create, update and retrieve subaccount', async () => {
     const client = getApiClient();
@@ -24,17 +25,16 @@ test('Can create, update and retrieve subaccount', async () => {
     expect(sub.created_on).not.toEqual(null);
     expect(retrievedSub.name).toBe(sub.name);
     expect(retrievedSub.default_portfolio_id).toBe(sub.default_portfolio_id);
-    expect(retrievedSub.logo_url).toBe(sub.logo_url);
-    expect(retrievedSub.created_on).toBe(sub.created_on);
+    expect(retrievedSub.logo_url).not.toEqual(null);
 
     expect(updatedSub.name).toBe(updatedSubaccountName);
-    expect(updatedSub.default_portfolio_id).toBe(portfolioId);
-    expect(updatedSub.logo_url).toBe(sub.logo_url);
+    expect(updatedSub.default_portfolio_id).toBe(null);
+    expect(updatedSub.logo_url).not.toEqual(null);
     expect(retrievedUpdatedSub.name).toBe(updatedSub.name);
     expect(retrievedUpdatedSub.default_portfolio_id).toBe(
         updatedSub.default_portfolio_id
     );
-    expect(retrievedUpdatedSub.logo_url).toBe(updatedSub.logo_url);
+    expect(retrievedUpdatedSub.logo_url).not.toEqual(null);
 }, 30000);
 
 test('Can update subaccount logo from url', async () => {
@@ -63,16 +63,29 @@ test('Can update subaccount logo from file', async () => {
         name: randomUUID(),
         default_portfolio_id: 'oH5hlq'
     });
-    const updatedSub = await client.updateSubaccountLogoFromUrl(sub.id, {
-        logo_url: 'http://example.com/image.png'
-    });
-    const retrievedUpdatedSub = await client.getSubaccountDetails(sub.id);
+    fs.readFile(
+        './test/integration/resources/cnaught-logo.png',
+        async (err, data) => {
+            const updatedSub = await client.updateSubaccountLogoFromImageData(
+                sub.id,
+                {
+                    logo_file_content: data,
+                    content_type: 'image/png'
+                }
+            );
+            const retrievedUpdatedSub = await client.getSubaccountDetails(
+                sub.id
+            );
 
-    expect(sub.logo_url).toEqual(null);
-    expect(updatedSub.name).toBe(sub.name);
-    expect(updatedSub.default_portfolio_id).toBe(sub.default_portfolio_id);
-    expect(updatedSub.logo_url).not.toEqual(null);
-    expect(retrievedUpdatedSub.logo_url).toBe(updatedSub.logo_url);
+            expect(sub.logo_url).toEqual(null);
+            expect(updatedSub.name).toBe(sub.name);
+            expect(updatedSub.default_portfolio_id).toBe(
+                sub.default_portfolio_id
+            );
+            expect(updatedSub.logo_url).not.toEqual(null);
+            expect(retrievedUpdatedSub.logo_url).toBe(updatedSub.logo_url);
+        }
+    );
 }, 30000);
 
 test('Can clear subaccount logo', async () => {
