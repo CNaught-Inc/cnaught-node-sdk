@@ -18,11 +18,12 @@ import type {
     Project,
     ProjectCategoryWithProjects,
     Portfolio,
-    PortfolioWithCategoryAllocations
+    PortfolioWithCategoryAllocations,
+    UpdateSubaccountOptions,
+    SubaccountLogoFileOptions,
+    SubaccountLogoUrlOptions,
+    ImpactDataFilterOptions
 } from './models/index.js';
-import type { UpdateSubaccountOptions } from './models/UpdateSubaccountOptions.js';
-import type { SubaccountLogoUrlOptions } from './models/SubaccountLogoUrlOptions.js';
-import type { SubaccountLogoFileOptions } from './models/SubaccountLogoFileOptions.js';
 
 export interface CNaughtApiClientOptions {
     /**
@@ -391,13 +392,23 @@ export class CNaughtApiClient {
      * or transforming the Request before sending
      * @returns Impact data for user or subaccount
      */
-    getImpactData = (
+    getImpactData = async (
+        filterOptions?: ImpactDataFilterOptions,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
-    ): Promise<ImpactData> =>
-        this.apiHandler.makeApiGetRequest<ImpactData>(
-            '/impact/data',
+    ): Promise<ImpactData> => {
+        const params = [];
+        if (filterOptions?.from) {
+            params.push(`from=${filterOptions.from}`);
+        }
+        if (filterOptions?.to) {
+            params.push(`to=${filterOptions.to}`);
+        }
+
+        return await this.apiHandler.makeApiGetRequest<ImpactData>(
+            `/impact/data${params.length > 0 ? `?${params.join('&')}` : ''}`,
             requestOptions
         );
+    };
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetImpactHostedPageConfig

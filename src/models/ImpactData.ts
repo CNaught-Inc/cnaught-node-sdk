@@ -8,4 +8,5 @@ export interface ImpactData {
     equivalents: ImpactEquivalents;
     categories: ImpactCategoryUsage[];
     since_date: string;
+    to_date: string | null;
 }

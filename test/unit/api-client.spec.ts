@@ -99,6 +99,7 @@ describe('api-client', () => {
         total_offset_kgs: 10,
         logo_url: 'https://example.com',
         since_date: '2022-08-05T24:00:00.29Z',
+        to_date: null,
         equivalents: {
             cars_off_the_road: 1,
             flights_lax_to_nyc: 2,
@@ -849,6 +850,22 @@ describe('api-client', () => {
 
             expect(mockMakeApiGetRequest).toBeCalledWith(
                 `/impact/data`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(res).toEqual(impactData);
+        });
+
+        it('get impact data with date filter', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(impactData);
+
+            const res = await sut.getImpactData({
+                from: 'from_date',
+                to: 'to_date'
+            }); // well known order
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/impact/data?from=from_date&to=to_date`,
                 undefined
             );
             expect(mockMakeApiGetRequest).toBeCalledTimes(1);
