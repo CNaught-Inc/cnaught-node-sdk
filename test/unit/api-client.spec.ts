@@ -5,7 +5,8 @@ import type {
     RideOrderOptions,
     GenericQuoteParams,
     RideQuoteParams,
-    SubaccountOptions,
+    CreateSubaccountOptions,
+    UpdateSubaccountOptions,
     Subaccount,
     ImpactData,
     ImpactHostedPageConfig,
@@ -13,7 +14,9 @@ import type {
     ProjectCategoryWithProjects,
     PortfolioWithCategoryAllocations,
     Portfolio,
-    List
+    List,
+    SubaccountLogoUrlOptions,
+    SubaccountLogoFileOptions
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -21,7 +24,12 @@ import { jest } from '@jest/globals';
 const mockMakeApiGetRequest: jest.Mock<ApiRequestHandler['makeApiGetRequest']> =
     jest.fn();
 const mockMakeApiPostRequest: jest.Mock<
-    ApiRequestHandler['makeApiGetRequest']
+    ApiRequestHandler['makeApiPostRequest']
+> = jest.fn();
+const mockMakeApiPutRequest: jest.Mock<ApiRequestHandler['makeApiPutRequest']> =
+    jest.fn();
+const mockMakeApiDeleteRequest: jest.Mock<
+    ApiRequestHandler['makeApiDeleteRequest']
 > = jest.fn();
 
 jest.mock('../../src/api-request-handler.js', () => {
@@ -29,7 +37,9 @@ jest.mock('../../src/api-request-handler.js', () => {
         ApiRequestHandler: jest.fn().mockImplementation(() => {
             return {
                 makeApiGetRequest: mockMakeApiGetRequest,
-                makeApiPostRequest: mockMakeApiPostRequest
+                makeApiPostRequest: mockMakeApiPostRequest,
+                makeApiPutRequest: mockMakeApiPutRequest,
+                makeApiDeleteRequest: mockMakeApiDeleteRequest
             };
         })
     };
@@ -80,7 +90,8 @@ describe('api-client', () => {
         id: subaccountId,
         name: 'My subaccount',
         created_on: '2023-11-13T18:33:58.494127Z',
-        default_portfolio_id: 'ABC'
+        default_portfolio_id: 'ABC',
+        logo_url: 'http://example.com/image.png'
     };
 
     const impactData: ImpactData = {
@@ -159,6 +170,8 @@ describe('api-client', () => {
     beforeEach(() => {
         mockMakeApiPostRequest.mockClear();
         mockMakeApiGetRequest.mockClear();
+        mockMakeApiPutRequest.mockClear();
+        mockMakeApiDeleteRequest.mockClear();
         sut = new CNaughtApiClient('apikey');
     });
 
@@ -689,9 +702,10 @@ describe('api-client', () => {
         it('create subaccount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(subaccountDetails);
 
-            const options: SubaccountOptions = {
+            const options: CreateSubaccountOptions = {
                 name: 'My Company',
-                default_portfolio_id: 'XYZ'
+                default_portfolio_id: 'XYZ',
+                logo_url: 'http://example.com/image.png'
             };
 
             const subaccount = await sut.createSubaccount(options);
@@ -708,7 +722,7 @@ describe('api-client', () => {
         it('create subaccount with idempotency', async () => {
             mockMakeApiPostRequest.mockResolvedValue(subaccountDetails);
 
-            const options: SubaccountOptions = {
+            const options: CreateSubaccountOptions = {
                 name: 'My Company',
                 default_portfolio_id: 'XYZ'
             };
@@ -725,6 +739,104 @@ describe('api-client', () => {
                 }
             );
             expect(mockMakeApiPostRequest).toBeCalledTimes(1);
+            expect(subaccount).toEqual(subaccountDetails);
+        });
+    });
+
+    describe('updateSubaccount', () => {
+        it('update subaccount', async () => {
+            mockMakeApiPutRequest.mockResolvedValue(subaccountDetails);
+
+            const subaccountId = 'ABC';
+            const options: UpdateSubaccountOptions = {
+                name: 'My Company',
+                default_portfolio_id: 'XYZ'
+            };
+
+            const subaccount = await sut.updateSubaccount(
+                subaccountId,
+                options
+            );
+
+            expect(mockMakeApiPutRequest).toBeCalledWith(
+                '/subaccounts/ABC',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPutRequest).toBeCalledTimes(1);
+            expect(subaccount).toEqual(subaccountDetails);
+        });
+    });
+
+    describe('updateSubaccountLogoFromUrl', () => {
+        it('update subaccount logo from url', async () => {
+            mockMakeApiPutRequest.mockResolvedValue(subaccountDetails);
+
+            const subaccountId = 'ABC';
+            const options: SubaccountLogoUrlOptions = {
+                logo_url: 'http://example.com/new.png'
+            };
+
+            const subaccount = await sut.updateSubaccountLogoFromUrl(
+                subaccountId,
+                options
+            );
+
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/subaccounts/ABC/logo',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
+            expect(subaccount).toEqual(subaccountDetails);
+        });
+    });
+
+    describe('updateSubaccountFromImageData', () => {
+        it('update subaccount from file', async () => {
+            mockMakeApiPutRequest.mockResolvedValue(subaccountDetails);
+
+            const subaccountId = 'ABC';
+            const options: SubaccountLogoFileOptions = {
+                logo_file_content: 'image data',
+                content_type: 'image/jpeg'
+            };
+
+            const subaccount = await sut.updateSubaccountLogoFromImageData(
+                subaccountId,
+                options
+            );
+
+            expect(mockMakeApiPutRequest).toBeCalledWith(
+                '/subaccounts/ABC/logo',
+                'image data',
+                {
+                    extraRequestOptions: {
+                        duplex: 'half'
+                    },
+                    headers: {
+                        'Content-Type': 'image/jpeg'
+                    }
+                }
+            );
+            expect(mockMakeApiPutRequest).toBeCalledTimes(1);
+            expect(subaccount).toEqual(subaccountDetails);
+        });
+    });
+
+    describe('removeSubaccountLogo', () => {
+        it('remove subaccount logo', async () => {
+            mockMakeApiDeleteRequest.mockResolvedValue(subaccountDetails);
+
+            const subaccountId = 'ABC';
+
+            const subaccount = await sut.removeSubaccountLogo(subaccountId);
+
+            expect(mockMakeApiDeleteRequest).toBeCalledWith(
+                '/subaccounts/ABC/logo',
+                undefined
+            );
+            expect(mockMakeApiDeleteRequest).toBeCalledTimes(1);
             expect(subaccount).toEqual(subaccountDetails);
         });
     });

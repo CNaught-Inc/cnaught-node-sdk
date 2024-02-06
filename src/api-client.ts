@@ -10,7 +10,7 @@ import type {
     RideQuoteParams,
     OffsetsQuote,
     IdempotencyRequestOptions,
-    SubaccountOptions,
+    CreateSubaccountOptions,
     SubaccountRequestOptions,
     Subaccount,
     ImpactData,
@@ -20,6 +20,9 @@ import type {
     Portfolio,
     PortfolioWithCategoryAllocations
 } from './models/index.js';
+import type { UpdateSubaccountOptions } from './models/UpdateSubaccountOptions.js';
+import type { SubaccountLogoUrlOptions } from './models/SubaccountLogoUrlOptions.js';
+import type { SubaccountLogoFileOptions } from './models/SubaccountLogoFileOptions.js';
 
 export interface CNaughtApiClientOptions {
     /**
@@ -234,12 +237,104 @@ export class CNaughtApiClient {
      * @returns Details of the created subaccount
      */
     createSubaccount = (
-        options: SubaccountOptions,
+        options: CreateSubaccountOptions,
         requestOptions?: IdempotencyRequestOptions & ApiRequestOptions
     ): Promise<Subaccount> =>
         this.apiHandler.makeApiPostRequest<Subaccount>(
             '/subaccounts',
             options,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/UpdateSubaccount
+     * Updates the subaccount with given id under the user identified by the API key.
+     * This does not include updating the logo: there are separate methods for doing so.
+     * @param id ID of the subaccount to update.
+     * @param options Properties of the subaccount to update, eg name, default portfolio.
+     * The update options should include all properties of the subaccount (except for logo) -
+     * not including the default portfolio id will have the effect of making the subaccount not
+     * have an explicit default portfolio (making it inherit the default portfolio from the parent user).
+     * @param requestOptions Optional additional request options, for transforming the request before sending
+     * @returns Details of the updated subaccount after applying the update
+     */
+    updateSubaccount = (
+        id: string,
+        options: UpdateSubaccountOptions,
+        requestOptions?: ApiRequestOptions
+    ): Promise<Subaccount> =>
+        this.apiHandler.makeApiPutRequest<Subaccount>(
+            `/subaccounts/${id}`,
+            options,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/UpdateSubaccountLogoFromURL
+     * Update the logo for the subaccount with given id under the user identified by the API key by
+     * downloading it from the URL provided in the options.
+     * @param id ID of the subaccount whose logo should be updated.
+     * @param logoOptions Options for specifying the URL to download the logo from.
+     * The URL should point to a valid image in a supported image format, and should include
+     * the content type for the image in the HTTP response when the image is retrieved from the URL.
+     * @param requestOptions Optional additional request options, for transforming the request before sending
+     * @returns Details of the updated subaccount after updating the logo
+     */
+    updateSubaccountLogoFromUrl = (
+        id: string,
+        logoOptions: SubaccountLogoUrlOptions,
+        requestOptions?: ApiRequestOptions
+    ): Promise<Subaccount> =>
+        this.apiHandler.makeApiPostRequest<Subaccount>(
+            `/subaccounts/${id}/logo`,
+            logoOptions,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/UpdateSubaccountLogoFromUpload
+     * Update the logo for the subaccount with given id under the user identified by the API key by
+     * uploading the image data for the logo provided in options.
+     * @param id ID of the subaccount whose logo should be updated.
+     * @param options Options for the new logo content.
+     * The logo_file_content property of this options object can be any object that is a valid value for the body of a fetch request.
+     * The content_type property of this options object must specify the image content type and must be a supported image type.
+     * @param requestOptions Optional additional request options, for transforming the request before sending
+     * @returns Details of the updated subaccount after updating the logo
+     */
+    updateSubaccountLogoFromImageData = (
+        id: string,
+        options: SubaccountLogoFileOptions,
+        requestOptions?: ApiRequestOptions
+    ): Promise<Subaccount> =>
+        this.apiHandler.makeApiPutRequest<Subaccount>(
+            `/subaccounts/${id}/logo`,
+            options.logo_file_content,
+            {
+                ...requestOptions,
+                ...(options.content_type && {
+                    headers: { 'Content-Type': options.content_type }
+                }),
+                extraRequestOptions: {
+                    duplex: 'half',
+                    ...requestOptions?.extraRequestOptions
+                }
+            }
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RemoveSubaccountLogo
+     * Removes the logo for a subaccount with given id under the user identified by the API key
+     * @param id ID of the subaccount whose logo should be updated.
+     * @param requestOptions Optional additional request options, for transforming the request before sending
+     * @returns Details of the updated subaccount after removing the logo.
+     */
+    removeSubaccountLogo = (
+        id: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<Subaccount> =>
+        this.apiHandler.makeApiDeleteRequest<Subaccount>(
+            `/subaccounts/${id}/logo`,
             requestOptions
         );
 

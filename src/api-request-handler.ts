@@ -97,6 +97,31 @@ export class ApiRequestHandler {
             .post(data, url)
             .json<Response>();
 
+    public makeApiPutRequest = <Response>(
+        url: string,
+        data: unknown | null,
+        requestOptions?: InternalRequestOptions
+    ) =>
+        this.wretch
+            .headers(this.getHeaders(data !== null, requestOptions))
+            .options({
+                ...requestOptions?.extraRequestOptions
+            })
+            .put(data, url)
+            .json<Response>();
+
+    public makeApiDeleteRequest = <Response>(
+        url: string,
+        requestOptions?: InternalRequestOptions
+    ) =>
+        this.wretch
+            .headers(this.getHeaders(false, requestOptions))
+            .options({
+                ...requestOptions?.extraRequestOptions
+            })
+            .delete(url)
+            .json<Response>();
+
     private getHeaders(
         hasData: boolean,
         requestOptions?: InternalRequestOptions
