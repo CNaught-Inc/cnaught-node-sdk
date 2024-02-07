@@ -27,4 +27,8 @@ export * from './ProjectCategory.js';
 export * from './ProjectCategoryWithProjects.js';
 export * from './Portfolio.js';
 export * from './PortfolioWithCategoryAllocations.js';
+export * from './UpdateSubaccountOptions.js';
 export * from './IdempotencyRequestOptions.js';
+export * from './SubaccountLogoUrlOptions.js';
+export * from './SubaccountLogoFileOptions.js';
+export * from './ImpactDataFilterOptions.js';

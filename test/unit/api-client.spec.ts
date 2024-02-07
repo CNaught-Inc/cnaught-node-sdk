@@ -99,6 +99,7 @@ describe('api-client', () => {
         total_offset_kgs: 10,
         logo_url: 'https://example.com',
         since_date: '2022-08-05T24:00:00.29Z',
+        to_date: null,
         equivalents: {
             cars_off_the_road: 1,
             flights_lax_to_nyc: 2,
@@ -850,6 +851,55 @@ describe('api-client', () => {
             expect(mockMakeApiGetRequest).toBeCalledWith(
                 `/impact/data`,
                 undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(res).toEqual(impactData);
+        });
+
+        it('get impact data with date filter', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(impactData);
+
+            const res = await sut.getImpactData({
+                from: new Date(Date.UTC(2024, 0, 1)),
+                to: new Date(Date.UTC(2024, 11, 31))
+            });
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/impact/data?from=2024-01-01T00:00:00.000Z&to=2024-12-31T00:00:00.000Z`,
+                undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(res).toEqual(impactData);
+        });
+
+        it('get impact data with subaccount', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(impactData);
+
+            const res = await sut.getImpactData(undefined, {
+                subaccountId: 'ABC'
+            });
+
+            expect(mockMakeApiGetRequest).toBeCalledWith('/impact/data', {
+                subaccountId: 'ABC'
+            });
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(res).toEqual(impactData);
+        });
+
+        it('get impact data with date filter and subaccount', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(impactData);
+
+            const res = await sut.getImpactData(
+                {
+                    from: new Date(Date.UTC(2024, 0, 1)),
+                    to: new Date(Date.UTC(2024, 11, 31))
+                },
+                { subaccountId: 'ABC' }
+            );
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/impact/data?from=2024-01-01T00:00:00.000Z&to=2024-12-31T00:00:00.000Z`,
+                { subaccountId: 'ABC' }
             );
             expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(res).toEqual(impactData);
