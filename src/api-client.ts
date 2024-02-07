@@ -22,7 +22,7 @@ import type {
     UpdateSubaccountOptions,
     SubaccountLogoFileOptions,
     SubaccountLogoUrlOptions,
-    ImpactDataFilterOptions
+    ImpactDateFilterOptions
 } from './models/index.js';
 
 export interface CNaughtApiClientOptions {
@@ -394,7 +394,7 @@ export class CNaughtApiClient {
      * @returns Impact data for user or subaccount
      */
     getImpactData = async (
-        filterOptions?: ImpactDataFilterOptions,
+        filterOptions?: ImpactDateFilterOptions,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<ImpactData> => {
         const params = [];

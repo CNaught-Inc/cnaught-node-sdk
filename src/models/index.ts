@@ -31,4 +31,4 @@ export * from './UpdateSubaccountOptions.js';
 export * from './IdempotencyRequestOptions.js';
 export * from './SubaccountLogoUrlOptions.js';
 export * from './SubaccountLogoFileOptions.js';
-export * from './ImpactDataFilterOptions.js';
+export * from './ImpactDateFilterOptions.js';
