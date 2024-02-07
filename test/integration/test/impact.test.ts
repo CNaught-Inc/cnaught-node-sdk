@@ -24,8 +24,8 @@ test('Can retrieve impact data', async () => {
 
 test('Can retrieve impact data with date range', async () => {
     const client = getApiClient();
-    const from = new Date(2024, 0, 1);
-    const to = new Date(2024, 1, 1);
+    const from = new Date(Date.UTC(2024, 0, 1));
+    const to = new Date(Date.UTC(2024, 1, 1));
     const impactData = await client.getImpactData({
         from,
         to
