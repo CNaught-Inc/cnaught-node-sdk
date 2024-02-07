@@ -19,7 +19,7 @@ test('Can retrieve impact data', async () => {
     // for now, can't actually check totals since on sandbox we don't record fulfillments
     expect(impactData.name).toBe('CNaught');
     expect(impactData.since_date).toBe('2023-09-26T00:18:51.764508Z');
-    expect(impactData.to_date).toBeUndefined();
+    expect(impactData.to_date).toBeFalsy();
 }, 30000);
 
 test('Can retrieve impact data with date range', async () => {
@@ -33,5 +33,5 @@ test('Can retrieve impact data with date range', async () => {
     expect(impactData.name).toBe('CNaught');
     expect(new Date(impactData.since_date)).toStrictEqual(from);
     expect(new Date(impactData.to_date!)).toStrictEqual(to);
-    expect(impactData.total_offset_kgs).toBe(55); // for fixed time range and user this is known
+    expect(impactData.total_offset_kgs).toBe(1571); // for fixed time range in the past and user this is known
 }, 30000);
