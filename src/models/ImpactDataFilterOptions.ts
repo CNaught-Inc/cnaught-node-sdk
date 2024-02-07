@@ -1,4 +1,4 @@
 export interface ImpactDataFilterOptions {
-    from?: string;
-    to?: string;
+    from?: Date;
+    to?: Date;
 }

@@ -388,6 +388,7 @@ export class CNaughtApiClient {
     /**
      * See https://docs.cnaught.com/api/reference/#operation/GetImpactData
      * Get the impact data for the user identified by the API key (or a subaccount of the user)
+     * @param filterOptions optional parameters for filtering the impact data by date range
      * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
      * or transforming the Request before sending
      * @returns Impact data for user or subaccount
@@ -398,10 +399,10 @@ export class CNaughtApiClient {
     ): Promise<ImpactData> => {
         const params = [];
         if (filterOptions?.from) {
-            params.push(`from=${filterOptions.from}`);
+            params.push(`from=${filterOptions.from.toISOString()}`);
         }
         if (filterOptions?.to) {
-            params.push(`to=${filterOptions.to}`);
+            params.push(`to=${filterOptions.to.toISOString()}`);
         }
 
         return await this.apiHandler.makeApiGetRequest<ImpactData>(

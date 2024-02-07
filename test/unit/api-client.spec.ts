@@ -860,13 +860,46 @@ describe('api-client', () => {
             mockMakeApiGetRequest.mockResolvedValue(impactData);
 
             const res = await sut.getImpactData({
-                from: 'from_date',
-                to: 'to_date'
-            }); // well known order
+                from: new Date(2024, 0, 1),
+                to: new Date(2024, 11, 31)
+            });
 
             expect(mockMakeApiGetRequest).toBeCalledWith(
-                `/impact/data?from=from_date&to=to_date`,
+                `/impact/data?from=2024-01-01T08:00:00.000Z&to=2024-12-31T08:00:00.000Z`,
                 undefined
+            );
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(res).toEqual(impactData);
+        });
+
+        it('get impact data with subaccount', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(impactData);
+
+            const res = await sut.getImpactData(undefined, {
+                subaccountId: 'ABC'
+            });
+
+            expect(mockMakeApiGetRequest).toBeCalledWith('/impact/data', {
+                subaccountId: 'ABC'
+            });
+            expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+            expect(res).toEqual(impactData);
+        });
+
+        it('get impact data with date filter and subaccount', async () => {
+            mockMakeApiGetRequest.mockResolvedValue(impactData);
+
+            const res = await sut.getImpactData(
+                {
+                    from: new Date(2024, 0, 1),
+                    to: new Date(2024, 11, 31)
+                },
+                { subaccountId: 'ABC' }
+            );
+
+            expect(mockMakeApiGetRequest).toBeCalledWith(
+                `/impact/data?from=2024-01-01T08:00:00.000Z&to=2024-12-31T08:00:00.000Z`,
+                { subaccountId: 'ABC' }
             );
             expect(mockMakeApiGetRequest).toBeCalledTimes(1);
             expect(res).toEqual(impactData);

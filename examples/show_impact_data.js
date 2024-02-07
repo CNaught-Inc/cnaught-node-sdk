@@ -6,6 +6,9 @@ import {
 } from '@cnaught/cnaught-node-sdk';
 import inquirer from 'inquirer';
 import 'dotenv/config';
+import DatePrompt from 'inquirer-date-prompt';
+
+inquirer.registerPrompt('date', DatePrompt);
 
 (async () => {
     // Initialize your client with your CNaught API key
@@ -53,12 +56,35 @@ import 'dotenv/config';
             }
         }
 
-        const impactData = await client.getImpactData({ subaccountId });
+        const { fromDate } = await inquirer.prompt({
+            type: 'date',
+            name: 'fromDate',
+            default: new Date(2024, 0, 1),
+            message:
+                'Start of period to show impact data for (clear to show impact from start of usage)',
+            format: { month: 'short', hour: 'numeric', minute: 'numeric' },
+            clearable: true
+        });
+
+        const { toDate } = await inquirer.prompt({
+            type: 'date',
+            name: 'toDate',
+            default: new Date(),
+            message:
+                'End of period to show impact data for (clear to show impact until current time)',
+            format: { month: 'short', hour: 'numeric', minute: 'numeric' },
+            clearable: true
+        });
+
+        const impactData = await client.getImpactData(
+            { from: fromDate, to: toDate },
+            { subaccountId }
+        );
         const impactHostedPageConfig = await client.getImpactHostedPageConfig({
             subaccountId
         });
         console.log(
-            `${impactData.name} has offset a total amount of ${impactData.total_offset_kgs} kg CO2e since ${impactData.since_date}`
+            `${impactData.name} has offset a total amount of ${impactData.total_offset_kgs} kg CO2e from ${impactData.since_date} until ${impactData.to_date}`
         );
         console.log('   This is the same as');
         console.log(
