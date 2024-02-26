@@ -79,6 +79,15 @@ describe('api-client', () => {
         ]
     };
 
+    const checkoutSessionId = 'ABCDEF';
+    const checkoutSession = {
+        id: checkoutSessionId,
+        checkout_url: 'https://www.example.com/checkout',
+        status: 'open',
+        amount_kg: 1000,
+        price_usd_cents: 2000
+    };
+
     const quote = {
         amount_kg: 20.5,
         price_usd_cents: 10
@@ -603,6 +612,40 @@ describe('api-client', () => {
             expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
+    });
+
+    it('createCheckoutSession', async () => {
+        mockMakeApiPostRequest.mockResolvedValue(checkoutSession);
+
+        const opts = {
+            email: 'jane.doe@example.com',
+            amount_kg: 1000,
+            success_url: 'https://www.example.com',
+            cancel_url: 'https://www.example.com'
+        };
+
+        const session = await sut.createCheckoutSession(opts);
+
+        expect(mockMakeApiPostRequest).toBeCalledWith(
+            '/orders/checkout-session',
+            opts,
+            undefined
+        );
+        expect(mockMakeApiPostRequest).toBeCalledTimes(1);
+        expect(session).toEqual(checkoutSession);
+    });
+
+    it('getCheckoutSession', async () => {
+        mockMakeApiGetRequest.mockResolvedValue(checkoutSession);
+
+        const session = await sut.getCheckoutSession(checkoutSessionId);
+
+        expect(mockMakeApiGetRequest).toBeCalledWith(
+            `/orders/checkout-session/${checkoutSessionId}`,
+            undefined
+        );
+        expect(mockMakeApiGetRequest).toBeCalledTimes(1);
+        expect(session).toEqual(checkoutSession);
     });
 
     describe('getSubaccountDetails', () => {
