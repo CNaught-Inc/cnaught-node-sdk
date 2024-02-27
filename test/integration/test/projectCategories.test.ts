@@ -5,7 +5,7 @@ test('get project category by id', async () => {
 
     const projectCategory = await client.getProjectCategoryDetails('hkgyn3'); // well-known project category
 
-    expect(projectCategory.name).toBe('Sandbox Category A');
+    expect(projectCategory.name).toBe('Sandbox Project Category A');
     expect(projectCategory.description).toBe(
         'This category is for sandbox use only and does not represent any real data.'
     );

@@ -20,7 +20,7 @@ test('get portfolio by id', async () => {
     );
 
     expect(portfolio.category_allocations[0].category.name).toBe(
-        'Sandbox Category A'
+        'Sandbox Project Category A'
     );
     expect(portfolio.category_allocations[0].category.description).toBe(
         'This category is for sandbox use only and does not represent any real data.'
@@ -36,7 +36,7 @@ test('get portfolio by id', async () => {
         'Frontier'
     );
     expect(portfolio.category_allocations[1].category.name).toBe(
-        'Sandbox Category B'
+        'Sandbox Project Category B'
     );
 }, 30000);
 
