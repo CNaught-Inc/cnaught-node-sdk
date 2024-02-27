@@ -1,9 +1,11 @@
 {
   "name": "@cnaught/cnaught-node-sdk",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "CNaught Carbon Offsets API - Node SDK",
   "main": "dist/index.js",
-  "files": ["dist/**"],
+  "files": [
+    "dist/**"
+  ],
   "type": "module",
   "scripts": {
     "build": "genversion --es6 src/version.ts && tsc",
@@ -25,7 +27,8 @@
   ],
   "author": "CNaught, Inc (https://www.cnaught.com)",
   "contributors": [
-    "Dan Kokotov <dkokotov@gmail.com>"
+    "Dan Kokotov <dkokotov@gmail.com>",
+    "Jason Chen <jasonschen5@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {

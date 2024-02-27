@@ -22,7 +22,9 @@ import type {
     UpdateSubaccountOptions,
     SubaccountLogoFileOptions,
     SubaccountLogoUrlOptions,
-    ImpactDateFilterOptions
+    ImpactDateFilterOptions,
+    CheckoutSession,
+    CheckoutSessionOptions
 } from './models/index.js';
 
 export interface CNaughtApiClientOptions {
@@ -190,6 +192,40 @@ export class CNaughtApiClient {
         this.apiHandler.makeApiPostRequest<GenericOrder>(
             `/orders/${id}/cancel`,
             null,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/CreateCheckoutSession
+     * Creates a Checkout Session for purchasing the given amount of carbon credits.
+     *
+     * @param options Options for the session
+     * @param requestOptions Optional additional request options, for specifying a subaccount to use
+     * or transforming the request before sending
+     * @returns New Checkout Session
+     */
+    createCheckoutSession = (
+        options: CheckoutSessionOptions,
+        requestOptions?: Required<SubaccountRequestOptions> & ApiRequestOptions
+    ): Promise<CheckoutSession> =>
+        this.apiHandler.makeApiPostRequest<CheckoutSession>(
+            `/orders/checkout-session`,
+            options,
+            requestOptions
+        );
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/GetCheckoutSessionById
+     * @param id Id of the Checkout Session to receive
+     * @param requestOptions Optional additional request options for transforming the request before sending
+     * @returns Checkout Session
+     */
+    getCheckoutSession = (
+        id: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<CheckoutSession> =>
+        this.apiHandler.makeApiGetRequest<CheckoutSession>(
+            `/orders/checkout-session/${id}`,
             requestOptions
         );
 

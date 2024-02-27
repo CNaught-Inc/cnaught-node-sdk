@@ -2,3 +2,7 @@
 
 /dist
 /coverage
+
+.lycheeignore
+
+.prettierrc

@@ -78,3 +78,6 @@ examples/package-lock.json
 # examples output
 examples/outputs/*
 !examples/outputs/.gitkeep
+
+# integration tests env setup
+apiEnvSetup.ts
