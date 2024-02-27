@@ -2,7 +2,6 @@ export default {
     displayName: 'Integration',
     preset: 'ts-jest/presets/default-esm',
     testEnvironment: 'node',
-    setupFiles: ['./test/integration/src/setup.ts'],
     testMatch: ['**/test/integration/test/**/*.test.ts'],
     modulePathIgnorePatterns: ['<rootDir>/dist'],
     moduleNameMapper: {
