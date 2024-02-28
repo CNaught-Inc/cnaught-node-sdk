@@ -1,7 +1,7 @@
 # [CNaught Node SDK](https://docs.cnaught.com/sdks/node/)
 
 [![Build Status](https://github.com/CNaught-Inc/cnaught-node-sdk/actions/workflows/build_test.yml/badge.svg?branch=main)](https://github.com/CNaught-Inc/cnaught-node-sdk/actions/workflows/build_test.yml)
-[![npm version](https://badge.fury.io/js/@cnaught%2Fcnaught-node-sdk.svg)](https://badge.fury.io/js/@cnaught%2Fcnaught-node-sdk)
+[![NPM Version](https://img.shields.io/npm/v/%40cnaught%2Fcnaught-node-sdk)](https://www.npmjs.com/package/@cnaught/cnaught-node-sdk)
 [![Software License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/cnaught-inc/cnaught-node-sdk/blob/main/LICENSE)
 
 ## Documentation
