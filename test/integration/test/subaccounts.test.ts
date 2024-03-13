@@ -6,9 +6,11 @@ test('Can create, update and retrieve subaccount', async () => {
     const client = getApiClient();
 
     const subaccountName = randomUUID();
+    const subaccountEmail = 'jane.doe@example.com';
     const portfolioId = 'oH5hlq';
     const sub = await client.createSubaccount({
         name: subaccountName,
+        email: subaccountEmail,
         default_portfolio_id: portfolioId, // well known portfolio id
         logo_url: 'http://example.com/image.png'
     });
@@ -20,14 +22,17 @@ test('Can create, update and retrieve subaccount', async () => {
     const retrievedUpdatedSub = await client.getSubaccountDetails(sub.id);
 
     expect(sub.name).toBe(subaccountName);
+    expect(sub.email).toBe(subaccountEmail);
     expect(sub.default_portfolio_id).toBe(portfolioId);
     expect(sub.logo_url).not.toEqual(null);
     expect(sub.created_on).not.toEqual(null);
     expect(retrievedSub.name).toBe(sub.name);
+    expect(retrievedSub.email).toBe(sub.email);
     expect(retrievedSub.default_portfolio_id).toBe(sub.default_portfolio_id);
     expect(retrievedSub.logo_url).not.toEqual(null);
 
     expect(updatedSub.name).toBe(updatedSubaccountName);
+    expect(updatedSub.email).toBe(null);
     expect(updatedSub.default_portfolio_id).toBe(null);
     expect(updatedSub.logo_url).not.toEqual(null);
     expect(retrievedUpdatedSub.name).toBe(updatedSub.name);

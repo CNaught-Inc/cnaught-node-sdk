@@ -23,6 +23,14 @@ import fs from 'node:fs';
         })
     ).name;
 
+    const email = (
+        await inquirer.prompt({
+            type: 'input',
+            name: 'email',
+            message: 'Email for new subaccount (blank if none)'
+        })
+    ).email;
+
     const logoUrl = (
         await inquirer.prompt({
             type: 'input',
@@ -55,6 +63,7 @@ import fs from 'node:fs';
         const subaccount = await client.createSubaccount(
             {
                 name,
+                email,
                 logo_url: logoUrl,
                 default_portfolio_id: portfolioId
             },

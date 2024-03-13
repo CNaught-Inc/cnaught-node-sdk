@@ -1,6 +1,6 @@
 {
   "name": "@cnaught/cnaught-node-sdk",
-  "version": "2.4.1",
+  "version": "2.5.1",
   "description": "CNaught Carbon Offsets API - Node SDK",
   "main": "dist/index.js",
   "files": [
