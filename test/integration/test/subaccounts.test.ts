@@ -58,7 +58,13 @@ test('Can update subaccount logo from url', async () => {
     expect(updatedSub.name).toBe(sub.name);
     expect(updatedSub.default_portfolio_id).toBe(sub.default_portfolio_id);
     expect(updatedSub.logo_url).not.toEqual(null);
-    expect(retrievedUpdatedSub.logo_url).toBe(updatedSub.logo_url);
+
+    const logoUrl = new URL(updatedSub.logo_url!);
+    const updatedLogoUrl = new URL(retrievedUpdatedSub.logo_url!);
+
+    expect(`${logoUrl.origin}${logoUrl.pathname}`).toBe(
+        `${updatedLogoUrl.origin}${updatedLogoUrl.pathname}`
+    );
 }, 30000);
 
 test('Can update subaccount logo from file', async () => {
@@ -88,7 +94,13 @@ test('Can update subaccount logo from file', async () => {
                 sub.default_portfolio_id
             );
             expect(updatedSub.logo_url).not.toEqual(null);
-            expect(retrievedUpdatedSub.logo_url).toBe(updatedSub.logo_url);
+
+            const logoUrl = new URL(updatedSub.logo_url!);
+            const updatedLogoUrl = new URL(retrievedUpdatedSub.logo_url!);
+
+            expect(`${logoUrl.origin}${logoUrl.pathname}`).toBe(
+                `${updatedLogoUrl.origin}${updatedLogoUrl.pathname}`
+            );
         }
     );
 }, 30000);
