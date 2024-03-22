@@ -16,7 +16,8 @@ import type {
     Portfolio,
     List,
     SubaccountLogoUrlOptions,
-    SubaccountLogoFileOptions
+    SubaccountLogoFileOptions,
+    GenericOrderByPriceOptions
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -296,7 +297,7 @@ describe('api-client', () => {
     });
 
     describe('placeGenericOrder', () => {
-        it('place order ', async () => {
+        it('place order with amount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
             const options: GenericOrderOptions = {
@@ -305,6 +306,28 @@ describe('api-client', () => {
                     url: 'https://www.example.com/callback'
                 },
                 amount_kg: 15
+            };
+
+            const order = await sut.placeGenericOrder(options);
+
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
+            expect(order).toEqual(orderDetails);
+        });
+
+        it('place order with price', async () => {
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
+
+            const options: GenericOrderByPriceOptions = {
+                metadata: 'clientid:124',
+                notification_config: {
+                    url: 'https://www.example.com/callback'
+                },
+                total_price_usd_cents: 3200
             };
 
             const order = await sut.placeGenericOrder(options);
