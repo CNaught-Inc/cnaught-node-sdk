@@ -1,6 +1,6 @@
 export * from './List.js';
 export * from './RideOrderOptions.js';
-export * from './GenericOrderOptions.js';
+export * from './GenericOrderByAmountOptions.js';
 export * from './GenericOrderByPriceOptions.js';
 export * from './OrderState.js';
 export * from './OrderType.js';

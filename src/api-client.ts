@@ -3,7 +3,7 @@ import { ApiRequestHandler } from './api-request-handler.js';
 import type {
     List,
     GenericOrder,
-    GenericOrderOptions,
+    GenericOrderByAmountOptions,
     GenericOrderByPriceOptions,
     RideOrderOptions,
     RideOrder,
@@ -145,7 +145,7 @@ export class CNaughtApiClient {
      * @returns Details of the placed order
      */
     placeGenericOrder = (
-        options: GenericOrderOptions | GenericOrderByPriceOptions,
+        options: GenericOrderByAmountOptions | GenericOrderByPriceOptions,
         requestOptions?: IdempotencyRequestOptions &
             SubaccountRequestOptions &
             ApiRequestOptions
