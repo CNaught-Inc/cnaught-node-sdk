@@ -1,7 +1,7 @@
 import { CNaughtApiClient } from '../../src/api-client.js';
 import { ApiRequestHandler } from '../../src/api-request-handler.js';
 import type {
-    GenericOrderOptions,
+    GenericOrderByAmountOptions,
     RideOrderOptions,
     GenericQuoteParams,
     RideQuoteParams,
@@ -16,7 +16,8 @@ import type {
     Portfolio,
     List,
     SubaccountLogoUrlOptions,
-    SubaccountLogoFileOptions
+    SubaccountLogoFileOptions,
+    GenericOrderByPriceOptions
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -296,10 +297,10 @@ describe('api-client', () => {
     });
 
     describe('placeGenericOrder', () => {
-        it('place order ', async () => {
+        it('place order with amount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderOptions = {
+            const options: GenericOrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -318,10 +319,32 @@ describe('api-client', () => {
             expect(order).toEqual(orderDetails);
         });
 
+        it('place order with price', async () => {
+            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
+
+            const options: GenericOrderByPriceOptions = {
+                metadata: 'clientid:124',
+                notification_config: {
+                    url: 'https://www.example.com/callback'
+                },
+                total_price_usd_cents: 3200
+            };
+
+            const order = await sut.placeGenericOrder(options);
+
+            expect(mockMakeApiPostRequest).toBeCalledWith(
+                '/orders',
+                options,
+                undefined
+            );
+            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
+            expect(order).toEqual(orderDetails);
+        });
+
         it('place order with portfolio id', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderOptions = {
+            const options: GenericOrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -344,7 +367,7 @@ describe('api-client', () => {
         it('place order with idempotency', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderOptions = {
+            const options: GenericOrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -366,7 +389,7 @@ describe('api-client', () => {
         it('place order for subaccount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderOptions = {
+            const options: GenericOrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'

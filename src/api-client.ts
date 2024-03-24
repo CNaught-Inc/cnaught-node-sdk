@@ -3,7 +3,8 @@ import { ApiRequestHandler } from './api-request-handler.js';
 import type {
     List,
     GenericOrder,
-    GenericOrderOptions,
+    GenericOrderByAmountOptions,
+    GenericOrderByPriceOptions,
     RideOrderOptions,
     RideOrder,
     GenericQuoteParams,
@@ -134,15 +135,17 @@ export class CNaughtApiClient {
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/SubmitOrder
-     * Places an order for carbon offsets by specifying the amount of offsets (in kg) directly.
-     * @param options Options for the order specifying amount of CO2 to offset, as well as other
-     * optional properties
+     * Places an order for carbon offsets by specifying the amount of offsets (in kg)
+     * or total price (in USD cents).
+     * Exactly one of amount or total price must be specified.
+     * @param options Options for the order specifying amount of CO2 to offset or total price,
+     * as well as other optional properties
      * @param requestOptions Optional additional request options, for specifying an idempotency key
      * or subaccount to use, or transforming the request before sending
      * @returns Details of the placed order
      */
     placeGenericOrder = (
-        options: GenericOrderOptions,
+        options: GenericOrderByAmountOptions | GenericOrderByPriceOptions,
         requestOptions?: IdempotencyRequestOptions &
             SubaccountRequestOptions &
             ApiRequestOptions

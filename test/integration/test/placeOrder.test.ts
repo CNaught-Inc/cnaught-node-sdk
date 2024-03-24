@@ -45,6 +45,29 @@ test('Can submit generic order', async () => {
     expect(order.type).toBe(OrderType.Generic);
 }, 30000);
 
+test('Can submit generic order by total price', async () => {
+    const client = getApiClient();
+    const metadata = 'Node sdk submission';
+    const callback = 'https://www.example.com/callback';
+
+    const order = await client.placeGenericOrder({
+        total_price_usd_cents: 3190,
+        metadata: metadata,
+        notification_config: {
+            url: callback
+        }
+    });
+
+    expect(order.state).toBe(OrderState.Placed);
+    expect(order.id).not.toBeNull();
+    expect(order.created_on).not.toBeNull();
+    expect(order.metadata).toBe(metadata);
+    expect(order.callback_url).toBe(callback);
+    expect(order.amount_kg).toBe(1595);
+    expect(order.price_usd_cents).toBe(3190);
+    expect(order.type).toBe(OrderType.Generic);
+}, 30000);
+
 test('Can submit generic order with portfolio ID', async () => {
     const client = getApiClient();
     const metadata = 'Node sdk submission';
