@@ -17,7 +17,10 @@ import type {
     List,
     SubaccountLogoUrlOptions,
     SubaccountLogoFileOptions,
-    GenericOrderByPriceOptions
+    GenericOrderByPriceOptions,
+    GroundTransportQuoteParams,
+    AirFreightQuoteParams,
+    FlightQuoteParams
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -510,18 +513,34 @@ describe('api-client', () => {
         });
     });
 
-    describe('getGenericQuote', () => {
+    describe.each([
+        ['getGenericQuote', { amount_kg: 15 }, '/quotes'],
+        [
+            'getAirFreightQuote',
+            { freight_mass_kg: 25, distance_km: 15 },
+            '/quotes/air-freight'
+        ],
+        ['getFlightQuote', { distance_km: 15 }, '/quotes/flight'],
+        [
+            'getGroundFreightQuote',
+            { freight_mass_kg: 25, distance_km: 15 },
+            '/quotes/ground-freight'
+        ],
+        [
+            'getGroundTransportQuote',
+            { distance_km: 15, vehicle_type: 'school_bus' },
+            '/quotes/ground-transport'
+        ],
+        ['getOfficeSpaceQuote', { square_footage: 15 }, '/quotes/office-space'],
+        ['getTrainQuote', { distance_km: 15 }, '/quotes/train']
+    ])('%s', (apiFnName: string, params: any, apiEndpoint: string) => {
         it('get quote', async () => {
             mockMakeApiPostRequest.mockResolvedValue(quote);
 
-            const params: GenericQuoteParams = {
-                amount_kg: 15
-            };
-
-            const result = await sut.getGenericQuote(params);
+            const result = await sut[apiFnName](params);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/quotes',
+                apiEndpoint,
                 params,
                 undefined
             );
@@ -532,16 +551,16 @@ describe('api-client', () => {
         it('get quote with portfolio id', async () => {
             mockMakeApiPostRequest.mockResolvedValue(quote);
 
-            const params: GenericQuoteParams = {
-                amount_kg: 15,
+            const paramsWithPortfolioId = {
+                ...params,
                 portfolio_id: 'XYZ'
             };
 
-            const result = await sut.getGenericQuote(params);
+            const result = await sut.getGenericQuote(paramsWithPortfolioId);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/quotes',
-                params,
+                paramsWithPortfolioId,
                 undefined
             );
             expect(mockMakeApiPostRequest).toBeCalledTimes(1);
@@ -550,6 +569,12 @@ describe('api-client', () => {
     });
 
     describe('getRideQuote', () => {
+        const withVehicleType = (params: RideQuoteParams) =>
+            ({
+                ...params,
+                vehicle_type: 'passenger_car_van_or_suv'
+            } as GroundTransportQuoteParams);
+
         it('get quote', async () => {
             mockMakeApiPostRequest.mockResolvedValue(quote);
 
@@ -560,8 +585,8 @@ describe('api-client', () => {
             const result = await sut.getRideQuote(params);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/quotes/ride',
-                params,
+                '/quotes/ground-transport',
+                withVehicleType(params),
                 undefined
             );
             expect(mockMakeApiPostRequest).toBeCalledTimes(1);
@@ -579,8 +604,8 @@ describe('api-client', () => {
             const result = await sut.getRideQuote(params);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/quotes/ride',
-                params,
+                '/quotes/ground-transport',
+                withVehicleType(params),
                 undefined
             );
             expect(mockMakeApiPostRequest).toBeCalledTimes(1);

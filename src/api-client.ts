@@ -25,7 +25,13 @@ import type {
     SubaccountLogoUrlOptions,
     ImpactDateFilterOptions,
     CheckoutSession,
-    CheckoutSessionOptions
+    CheckoutSessionOptions,
+    AirFreightQuoteParams,
+    FlightQuoteParams,
+    GroundFreightQuoteParams,
+    GroundTransportQuoteParams,
+    OfficeSpaceQuoteParams,
+    TrainQuoteParams
 } from './models/index.js';
 
 export interface CNaughtApiClientOptions {
@@ -232,25 +238,94 @@ export class CNaughtApiClient {
             requestOptions
         );
 
+    private createQuoteApi<TParams extends object>(quotesRouteSubPath: string) {
+        return (
+            params: TParams,
+            requestOptions?: SubaccountRequestOptions & ApiRequestOptions
+        ) =>
+            this.apiHandler.makeApiPostRequest<OffsetsQuote>(
+                `/quotes${quotesRouteSubPath}`,
+                params,
+                requestOptions
+            );
+    }
+
     /**
      * See https://docs.cnaught.com/api/reference/#operation/RequestQuote
-     * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
+     * Gets a price quote for carbon credits by specifying the amount of CO2 to offset (in kg) directly.
      * @param params Params for getting a generic offsets price quote
      * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
      * or transforming the Request before sending
      * @returns The quote
      */
-    getGenericQuote = (
-        params: GenericQuoteParams,
-        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
-    ): Promise<OffsetsQuote> =>
-        this.apiHandler.makeApiPostRequest<OffsetsQuote>(
-            '/quotes',
-            params,
-            requestOptions
-        );
+    getGenericQuote = this.createQuoteApi<GenericQuoteParams>('');
 
     /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestAirFreightQuote
+     * Gets a price quote for offsetting air freight emissions.
+     * @param params Params for getting an air freight offsets price quote
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
+     * @returns The quote
+     */
+    getAirFreightQuote =
+        this.createQuoteApi<AirFreightQuoteParams>('/air-freight');
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestFlightQuote
+     * Gets a price quote for offsetting flight emissions.
+     * @param params Params for getting a flight offsets price quote
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
+     * @returns The quote
+     */
+    getFlightQuote = this.createQuoteApi<FlightQuoteParams>('/flight');
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestGroundFreightQuote
+     * Gets a price quote for offsetting ground freight emissions.
+     * @param params Params for getting a ground freight offsets price quote
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
+     * @returns The quote
+     */
+    getGroundFreightQuote =
+        this.createQuoteApi<GroundFreightQuoteParams>('/ground-freight');
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestGroundTransportQuote
+     * Gets a price quote for offsetting ground transport emissions.
+     * @param params Params for getting a ground transport offsets price quote
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
+     * @returns The quote
+     */
+    getGroundTransportQuote =
+        this.createQuoteApi<GroundTransportQuoteParams>('/ground-transport');
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestOfficeSpaceQuote
+     * Gets a price quote for offsetting office space emissions.
+     * @param params Params for getting an office space offsets price quote
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
+     * @returns The quote
+     */
+    getOfficeSpaceQuote =
+        this.createQuoteApi<OfficeSpaceQuoteParams>('/office-space');
+
+    /**
+     * See https://docs.cnaught.com/api/reference/#operation/RequestTrainQuote
+     * Gets a price quote for offsetting train emissions.
+     * @param params Params for getting a train offsets price quote
+     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
+     * or transforming the Request before sending
+     * @returns The quote
+     */
+    getTrainQuote = this.createQuoteApi<TrainQuoteParams>('/train');
+
+    /**
+     * @deprecated Use @see getGroundTransportQuote with `passenger_car_van_or_suv` as the vehicle type instead
      * See https://docs.cnaught.com/api/reference/#operation/RequestRideQuote
      * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
      * @param params Params for getting a price quote for offsetting a vehicle ride
@@ -262,9 +337,8 @@ export class CNaughtApiClient {
         params: RideQuoteParams,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<OffsetsQuote> =>
-        this.apiHandler.makeApiPostRequest<OffsetsQuote>(
-            '/quotes/ride',
-            params,
+        this.getGroundTransportQuote(
+            { ...params, vehicle_type: 'passenger_car_van_or_suv' },
             requestOptions
         );
 
