@@ -3,7 +3,6 @@ import { ApiRequestHandler } from '../../src/api-request-handler.js';
 import type {
     GenericOrderByAmountOptions,
     RideOrderOptions,
-    GenericQuoteParams,
     RideQuoteParams,
     CreateSubaccountOptions,
     UpdateSubaccountOptions,
@@ -18,9 +17,7 @@ import type {
     SubaccountLogoUrlOptions,
     SubaccountLogoFileOptions,
     GenericOrderByPriceOptions,
-    GroundTransportQuoteParams,
-    AirFreightQuoteParams,
-    FlightQuoteParams
+    GroundTransportQuoteParams
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
