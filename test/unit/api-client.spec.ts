@@ -84,7 +84,7 @@ describe('api-client', () => {
     const checkoutSession = {
         id: checkoutSessionId,
         checkout_url: 'https://www.example.com/checkout',
-        status: 'open',
+        state: 'open',
         amount_kg: 1000,
         price_usd_cents: 2000
     };
@@ -663,7 +663,6 @@ describe('api-client', () => {
         mockMakeApiPostRequest.mockResolvedValue(checkoutSession);
 
         const opts = {
-            email: 'jane.doe@example.com',
             amount_kg: 1000,
             success_url: 'https://www.example.com',
             cancel_url: 'https://www.example.com'
@@ -672,7 +671,7 @@ describe('api-client', () => {
         const session = await sut.createCheckoutSession(opts);
 
         expect(mockMakeApiPostRequest).toBeCalledWith(
-            '/orders/checkout-session',
+            '/checkout/sessions',
             opts,
             undefined
         );
@@ -686,7 +685,7 @@ describe('api-client', () => {
         const session = await sut.getCheckoutSession(checkoutSessionId);
 
         expect(mockMakeApiGetRequest).toBeCalledWith(
-            `/orders/checkout-session/${checkoutSessionId}`,
+            `/checkout/sessions/${checkoutSessionId}`,
             undefined
         );
         expect(mockMakeApiGetRequest).toBeCalledTimes(1);

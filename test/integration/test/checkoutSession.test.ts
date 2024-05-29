@@ -24,7 +24,6 @@ describe('createCheckoutSession', () => {
             try {
                 await client.createCheckoutSession(
                     {
-                        email: 'jane.doe@example.com',
                         amount_kg: invalidAmountKg,
                         success_url: 'https://www.example.com',
                         cancel_url: 'https://www.example.com'
@@ -49,7 +48,6 @@ describe('createCheckoutSession', () => {
             try {
                 await client.createCheckoutSession(
                     {
-                        email: 'jane.doe@example.com',
                         amount_kg: 100,
                         success_url: invalidSuccessUrl,
                         cancel_url: 'https://www.example.com'
@@ -70,7 +68,6 @@ describe('createCheckoutSession', () => {
             try {
                 await client.createCheckoutSession(
                     {
-                        email: 'jane.doe@example.com',
                         amount_kg: 100,
                         success_url: 'https://www.example.com',
                         cancel_url: invalidCancelUrl
@@ -89,7 +86,6 @@ describe('createCheckoutSession', () => {
         const client = getApiClient();
         const checkoutSession = await client.createCheckoutSession(
             {
-                email: 'jane.doe@example.com',
                 amount_kg: 100,
                 success_url: 'https://www.example.com',
                 cancel_url: 'https://www.example.com'
@@ -100,7 +96,7 @@ describe('createCheckoutSession', () => {
             expect.objectContaining({
                 id: expect.any(String),
                 checkout_url: expect.any(String),
-                status: 'open',
+                state: 'open',
                 amount_kg: 100,
                 price_usd_cents: expect.any(Number)
             } satisfies CheckoutSession)

@@ -215,10 +215,10 @@ export class CNaughtApiClient {
      */
     createCheckoutSession = (
         options: CheckoutSessionOptions,
-        requestOptions?: Required<SubaccountRequestOptions> & ApiRequestOptions
+        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
     ): Promise<CheckoutSession> =>
         this.apiHandler.makeApiPostRequest<CheckoutSession>(
-            `/orders/checkout-session`,
+            `/checkout/sessions`,
             options,
             requestOptions
         );
@@ -234,7 +234,7 @@ export class CNaughtApiClient {
         requestOptions?: ApiRequestOptions
     ): Promise<CheckoutSession> =>
         this.apiHandler.makeApiGetRequest<CheckoutSession>(
-            `/orders/checkout-session/${id}`,
+            `/checkout/sessions/${id}`,
             requestOptions
         );
 
