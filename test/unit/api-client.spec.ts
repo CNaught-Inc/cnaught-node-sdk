@@ -119,8 +119,8 @@ describe('api-client', () => {
         categories: [
             {
                 category: {
-                    id: 'XYZ',
-                    name: 'Category 1'
+                    name: 'Category 1',
+                    description: 'Category 1 description'
                 },
                 offset_kgs: 10,
                 projects: [
