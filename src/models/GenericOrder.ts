@@ -1,5 +1,4 @@
 import type { OrderState } from './OrderState.js';
-import type { OrderType } from './OrderType.js';
 import type { ProjectAllocation } from './ProjectAllocation.js';
 
 /** Generic Offset order for a given amount of CO2 */
@@ -12,7 +11,6 @@ export interface GenericOrder {
     description?: string;
     price_usd_cents: number;
     state: OrderState;
-    type: OrderType;
     callback_url?: string;
     certificate_public_url?: string;
     certificate_download_public_url?: string;

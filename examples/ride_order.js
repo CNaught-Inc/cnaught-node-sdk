@@ -92,7 +92,8 @@ import 'dotenv/config';
             } using portfolio ${portfolioId ?? 'default'} to fulfill`
         );
 
-        const quote = await client.getRideQuote({
+        const quote = await client.getGroundTransportQuote({
+            vehicle_type: 'passenger_car_van_or_suv',
             distance_km: distance,
             portfolio_id: portfolioId
         });
@@ -116,9 +117,9 @@ import 'dotenv/config';
 
         // submit a ride order if confirmed
         if (shouldBuy) {
-            const order = await client.placeRideOrder(
+            const order = await client.placeGenericOrder(
                 {
-                    distance_km: 10,
+                    amount_kg: quote.amount_kg,
                     portfolio_id: portfolioId,
                     description: description
                 },
