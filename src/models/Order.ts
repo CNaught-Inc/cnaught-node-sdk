@@ -2,7 +2,7 @@ import type { OrderState } from './OrderState.js';
 import type { ProjectAllocation } from './ProjectAllocation.js';
 
 /** Generic Offset order for a given amount of CO2 */
-export interface GenericOrder {
+export interface Order {
     id: string;
     order_number: string;
     amount_kg: number;

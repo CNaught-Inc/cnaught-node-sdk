@@ -117,7 +117,7 @@ import 'dotenv/config';
 
         // submit a ride order if confirmed
         if (shouldBuy) {
-            const order = await client.placeGenericOrder(
+            const order = await client.placeOrder(
                 {
                     amount_kg: quote.amount_kg,
                     portfolio_id: portfolioId,

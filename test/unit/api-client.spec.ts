@@ -1,7 +1,7 @@
 import { CNaughtApiClient } from '../../src/api-client.js';
 import { ApiRequestHandler } from '../../src/api-request-handler.js';
 import type {
-    GenericOrderByAmountOptions,
+    OrderByAmountOptions,
     CreateSubaccountOptions,
     UpdateSubaccountOptions,
     Subaccount,
@@ -14,7 +14,7 @@ import type {
     List,
     SubaccountLogoUrlOptions,
     SubaccountLogoFileOptions,
-    GenericOrderByPriceOptions
+    OrderByPriceOptions
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -293,11 +293,11 @@ describe('api-client', () => {
         });
     });
 
-    describe('placeGenericOrder', () => {
+    describe('placeOrder', () => {
         it('place order with amount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -305,7 +305,7 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options);
+            const order = await sut.placeOrder(options);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/orders',
@@ -319,7 +319,7 @@ describe('api-client', () => {
         it('place order with price', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByPriceOptions = {
+            const options: OrderByPriceOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -327,7 +327,7 @@ describe('api-client', () => {
                 total_price_usd_cents: 3200
             };
 
-            const order = await sut.placeGenericOrder(options);
+            const order = await sut.placeOrder(options);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/orders',
@@ -341,7 +341,7 @@ describe('api-client', () => {
         it('place order with portfolio id', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -350,7 +350,7 @@ describe('api-client', () => {
                 portfolio_id: 'XYZ'
             };
 
-            const order = await sut.placeGenericOrder(options);
+            const order = await sut.placeOrder(options);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/orders',
@@ -364,7 +364,7 @@ describe('api-client', () => {
         it('place order with idempotency', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -372,7 +372,7 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options, {
+            const order = await sut.placeOrder(options, {
                 idempotencyKey: 'ABCD'
             });
 
@@ -386,7 +386,7 @@ describe('api-client', () => {
         it('place order for subaccount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -394,7 +394,7 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options, {
+            const order = await sut.placeOrder(options, {
                 subaccountId: 'XYZ'
             });
 

@@ -2,9 +2,9 @@
 import { ApiRequestHandler } from './api-request-handler.js';
 import type {
     List,
-    GenericOrder,
-    GenericOrderByAmountOptions,
-    GenericOrderByPriceOptions,
+    Order,
+    OrderByAmountOptions,
+    OrderByPriceOptions,
     GenericQuoteParams,
     OffsetsQuote,
     IdempotencyRequestOptions,
@@ -99,8 +99,8 @@ export class CNaughtApiClient {
     getOrderDetails = (
         id: string,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
-    ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiGetRequest<GenericOrder>(
+    ): Promise<Order> =>
+        this.apiHandler.makeApiGetRequest<Order>(
             `/orders/${id}`,
             requestOptions
         );
@@ -120,7 +120,7 @@ export class CNaughtApiClient {
         limit?: number,
         startingAfter?: string,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
-    ): Promise<List<GenericOrder>> => {
+    ): Promise<List<Order>> => {
         const params = [];
         if (limit) {
             params.push(`limit=${limit}`);
@@ -130,7 +130,7 @@ export class CNaughtApiClient {
         }
 
         const query = `?${params.join('&')}`;
-        return await this.apiHandler.makeApiGetRequest<List<GenericOrder>>(
+        return await this.apiHandler.makeApiGetRequest<List<Order>>(
             `/orders${params.length > 0 ? query : ''}`,
             requestOptions
         );
@@ -147,13 +147,13 @@ export class CNaughtApiClient {
      * or subaccount to use, or transforming the request before sending
      * @returns Details of the placed order
      */
-    placeGenericOrder = (
-        options: GenericOrderByAmountOptions | GenericOrderByPriceOptions,
+    placeOrder = (
+        options: OrderByAmountOptions | OrderByPriceOptions,
         requestOptions?: IdempotencyRequestOptions &
             SubaccountRequestOptions &
             ApiRequestOptions
-    ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiPostRequest<GenericOrder>(
+    ): Promise<Order> =>
+        this.apiHandler.makeApiPostRequest<Order>(
             '/orders',
             options,
             requestOptions
@@ -173,8 +173,8 @@ export class CNaughtApiClient {
         requestOptions?: IdempotencyRequestOptions &
             SubaccountRequestOptions &
             ApiRequestOptions
-    ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiPostRequest<GenericOrder>(
+    ): Promise<Order> =>
+        this.apiHandler.makeApiPostRequest<Order>(
             `/orders/${id}/cancel`,
             null,
             requestOptions

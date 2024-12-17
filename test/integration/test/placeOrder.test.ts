@@ -5,11 +5,11 @@ import {
 } from '../../../src/models/index.js';
 import { randomUUID } from 'crypto';
 
-test('Cannot place generic order with negative amount', async () => {
+test('Cannot place order with negative amount', async () => {
     const client = getApiClient();
 
     try {
-        await client.placeGenericOrder({ amount_kg: -10 });
+        await client.placeOrder({ amount_kg: -10 });
         throw new Error('should have thrown validation error');
     } catch (error) {
         expect(error).toBeInstanceOf(CNaughtError);
@@ -21,12 +21,12 @@ test('Cannot place generic order with negative amount', async () => {
     }
 }, 30000);
 
-test('Can submit generic order', async () => {
+test('Can submit order', async () => {
     const client = getApiClient();
     const metadata = 'Node sdk submission';
     const callback = 'https://www.example.com/callback';
 
-    const order = await client.placeGenericOrder({
+    const order = await client.placeOrder({
         amount_kg: 10,
         metadata: metadata,
         notification_config: {
@@ -43,12 +43,12 @@ test('Can submit generic order', async () => {
     expect(order.price_usd_cents).toBe(20);
 }, 30000);
 
-test('Can submit generic order by total price', async () => {
+test('Can submit order by total price', async () => {
     const client = getApiClient();
     const metadata = 'Node sdk submission';
     const callback = 'https://www.example.com/callback';
 
-    const order = await client.placeGenericOrder({
+    const order = await client.placeOrder({
         total_price_usd_cents: 3190,
         metadata: metadata,
         notification_config: {
@@ -65,12 +65,12 @@ test('Can submit generic order by total price', async () => {
     expect(order.price_usd_cents).toBe(3190);
 }, 30000);
 
-test('Can submit generic order with portfolio ID', async () => {
+test('Can submit order with portfolio ID', async () => {
     const client = getApiClient();
     const metadata = 'Node sdk submission';
     const callback = 'https://www.example.com/callback';
 
-    const order = await client.placeGenericOrder({
+    const order = await client.placeOrder({
         amount_kg: 10,
         metadata: metadata,
         notification_config: {
@@ -83,7 +83,7 @@ test('Can submit generic order with portfolio ID', async () => {
     expect(order.id).not.toBeNull();
 }, 30000);
 
-test('Placing generic order twice with same idempotency key returns replay', async () => {
+test('Placing order twice with same idempotency key returns replay', async () => {
     const client = getApiClient();
     const metadata = 'Node sdk submission';
     const callback = 'https://www.example.com/callback';
@@ -96,14 +96,14 @@ test('Placing generic order twice with same idempotency key returns replay', asy
         }
     };
     const requestOpts = { idempotencyKey: randomUUID() };
-    const order = await client.placeGenericOrder(orderOpts, requestOpts);
-    const order2 = await client.placeGenericOrder(orderOpts, requestOpts);
+    const order = await client.placeOrder(orderOpts, requestOpts);
+    const order2 = await client.placeOrder(orderOpts, requestOpts);
 
     expect(order.id).not.toBeNull();
     expect(order2.id).toBe(order.id);
 }, 30000);
 
-test('Placing generic order twice with same idempotency key but different payload returns error', async () => {
+test('Placing order twice with same idempotency key but different payload returns error', async () => {
     const client = getApiClient();
     const metadata = 'Node sdk submission';
     const callback = 'https://www.example.com/callback';
@@ -116,11 +116,11 @@ test('Placing generic order twice with same idempotency key but different payloa
         }
     };
     const requestOpts = { idempotencyKey: randomUUID() };
-    await client.placeGenericOrder(orderOpts, requestOpts);
+    await client.placeOrder(orderOpts, requestOpts);
     orderOpts.metadata = orderOpts.metadata + ' changed';
 
     try {
-        await client.placeGenericOrder(orderOpts, requestOpts);
+        await client.placeOrder(orderOpts, requestOpts);
     } catch (error) {
         expect(error).toBeInstanceOf(CNaughtError);
         const cnaughtErr = error as CNaughtError;

@@ -127,7 +127,7 @@ test('can place and retrieve orders for subaccount', async () => {
     const client = getApiClient();
 
     const sub = await client.createSubaccount({ name: randomUUID() });
-    const order = await client.placeGenericOrder(
+    const order = await client.placeOrder(
         {
             amount_kg: 10
         },
