@@ -4,8 +4,8 @@ const client = getApiClient();
 beforeAll(async () => {
     const orderList = await client.getListOfOrders();
     if (orderList === undefined || orderList.data.length < 2) {
-        await client.placeGenericOrder({ amount_kg: 10.5 });
-        await client.placeRideOrder({ distance_km: 15 });
+        await client.placeOrder({ amount_kg: 10.5 });
+        await client.placeOrder({ amount_kg: 20 });
     }
 }, 60000);
 

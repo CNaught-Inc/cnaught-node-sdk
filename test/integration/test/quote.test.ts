@@ -64,14 +64,6 @@ describe.each([
             params: { distance_km: 1000 },
             expectedQuote: { amount_kg: 38, price_usd_cents: 76 }
         }
-    ],
-    [
-        'getRideQuote',
-        { distance_km: -10 },
-        {
-            params: { distance_km: 30 },
-            expectedQuote: { amount_kg: 8, price_usd_cents: 16 }
-        }
     ]
 ] as TestCaseParams[])(
     '%s',

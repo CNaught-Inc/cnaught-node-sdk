@@ -2,13 +2,10 @@
 import { ApiRequestHandler } from './api-request-handler.js';
 import type {
     List,
-    GenericOrder,
-    GenericOrderByAmountOptions,
-    GenericOrderByPriceOptions,
-    RideOrderOptions,
-    RideOrder,
+    Order,
+    OrderByAmountOptions,
+    OrderByPriceOptions,
     GenericQuoteParams,
-    RideQuoteParams,
     OffsetsQuote,
     IdempotencyRequestOptions,
     CreateSubaccountOptions,
@@ -102,8 +99,8 @@ export class CNaughtApiClient {
     getOrderDetails = (
         id: string,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
-    ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiGetRequest<GenericOrder>(
+    ): Promise<Order> =>
+        this.apiHandler.makeApiGetRequest<Order>(
             `/orders/${id}`,
             requestOptions
         );
@@ -123,7 +120,7 @@ export class CNaughtApiClient {
         limit?: number,
         startingAfter?: string,
         requestOptions?: SubaccountRequestOptions & ApiRequestOptions
-    ): Promise<List<GenericOrder>> => {
+    ): Promise<List<Order>> => {
         const params = [];
         if (limit) {
             params.push(`limit=${limit}`);
@@ -133,7 +130,7 @@ export class CNaughtApiClient {
         }
 
         const query = `?${params.join('&')}`;
-        return await this.apiHandler.makeApiGetRequest<List<GenericOrder>>(
+        return await this.apiHandler.makeApiGetRequest<List<Order>>(
             `/orders${params.length > 0 ? query : ''}`,
             requestOptions
         );
@@ -150,35 +147,14 @@ export class CNaughtApiClient {
      * or subaccount to use, or transforming the request before sending
      * @returns Details of the placed order
      */
-    placeGenericOrder = (
-        options: GenericOrderByAmountOptions | GenericOrderByPriceOptions,
+    placeOrder = (
+        options: OrderByAmountOptions | OrderByPriceOptions,
         requestOptions?: IdempotencyRequestOptions &
             SubaccountRequestOptions &
             ApiRequestOptions
-    ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiPostRequest<GenericOrder>(
+    ): Promise<Order> =>
+        this.apiHandler.makeApiPostRequest<Order>(
             '/orders',
-            options,
-            requestOptions
-        );
-
-    /**
-     * See https://docs.cnaught.com/api/reference/#operation/SubmitRideOrder
-     * Places an order for offsets for a vehicle ride.
-     * @param options Options for the order specifying distance of ride, as well as other
-     * optional properties
-     * @param requestOptions Optional additional request options, for specifying an idempotency key
-     * or subaccount to use, or transforming the request before sending
-     * @returns Details of the placed order
-     */
-    placeRideOrder = (
-        options: RideOrderOptions,
-        requestOptions?: IdempotencyRequestOptions &
-            SubaccountRequestOptions &
-            ApiRequestOptions
-    ): Promise<RideOrder> =>
-        this.apiHandler.makeApiPostRequest<RideOrder>(
-            '/orders/ride',
             options,
             requestOptions
         );
@@ -197,8 +173,8 @@ export class CNaughtApiClient {
         requestOptions?: IdempotencyRequestOptions &
             SubaccountRequestOptions &
             ApiRequestOptions
-    ): Promise<GenericOrder> =>
-        this.apiHandler.makeApiPostRequest<GenericOrder>(
+    ): Promise<Order> =>
+        this.apiHandler.makeApiPostRequest<Order>(
             `/orders/${id}/cancel`,
             null,
             requestOptions
@@ -323,24 +299,6 @@ export class CNaughtApiClient {
      * @returns The quote
      */
     getTrainQuote = this.createQuoteApi<TrainQuoteParams>('/train');
-
-    /**
-     * @deprecated Use @see getGroundTransportQuote with `passenger_car_van_or_suv` as the vehicle type instead
-     * See https://docs.cnaught.com/api/reference/#operation/RequestRideQuote
-     * Gets a price quote for carbon offsets by specifying the amount of CO2 to offset (in kg) directly.
-     * @param params Params for getting a price quote for offsetting a vehicle ride
-     * @param requestOptions Optional additional request options, e.g. for specifying a subaccount to use
-     * or transforming the Request before sending
-     * @returns The quote
-     */
-    getRideQuote = (
-        params: RideQuoteParams,
-        requestOptions?: SubaccountRequestOptions & ApiRequestOptions
-    ): Promise<OffsetsQuote> =>
-        this.getGroundTransportQuote(
-            { ...params, vehicle_type: 'passenger_car_van_or_suv' },
-            requestOptions
-        );
 
     /**
      * See https://docs.cnaught.com/api/reference/#operation/CreateSubaccount

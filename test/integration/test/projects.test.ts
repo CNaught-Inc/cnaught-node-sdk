@@ -19,7 +19,7 @@ test('get project by id', async () => {
     expect(project.registry_id).toBeNull();
     expect(project.registry_url).toBeNull();
     expect(project.primary_image_url).toBe(
-        'https://assets.cnaught.com/64fd900fcf6f93409fc7ff21/6525d21f1a6953d320ea7901_64cabf485b8978f04658185f_pexels-symeon-ekizoglou-2880801.jpg'
+        'https://assets.cnaught.com/64fd900fcf6f93409fc7ff21/67466d4c5dac34242677eb4b_64cabf485b8978f04658185f_pexels-symeon-ekizoglou-2880801.webp'
     );
     expect(project.un_sdg_goals).toStrictEqual([1, 4, 6]);
 }, 30000);

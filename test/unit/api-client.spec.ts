@@ -1,9 +1,7 @@
 import { CNaughtApiClient } from '../../src/api-client.js';
 import { ApiRequestHandler } from '../../src/api-request-handler.js';
 import type {
-    GenericOrderByAmountOptions,
-    RideOrderOptions,
-    RideQuoteParams,
+    OrderByAmountOptions,
     CreateSubaccountOptions,
     UpdateSubaccountOptions,
     Subaccount,
@@ -16,8 +14,7 @@ import type {
     List,
     SubaccountLogoUrlOptions,
     SubaccountLogoFileOptions,
-    GenericOrderByPriceOptions,
-    GroundTransportQuoteParams
+    OrderByPriceOptions
 } from '../../src/models/index.js';
 
 import { jest } from '@jest/globals';
@@ -296,11 +293,11 @@ describe('api-client', () => {
         });
     });
 
-    describe('placeGenericOrder', () => {
+    describe('placeOrder', () => {
         it('place order with amount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -308,7 +305,7 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options);
+            const order = await sut.placeOrder(options);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/orders',
@@ -322,7 +319,7 @@ describe('api-client', () => {
         it('place order with price', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByPriceOptions = {
+            const options: OrderByPriceOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -330,7 +327,7 @@ describe('api-client', () => {
                 total_price_usd_cents: 3200
             };
 
-            const order = await sut.placeGenericOrder(options);
+            const order = await sut.placeOrder(options);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/orders',
@@ -344,7 +341,7 @@ describe('api-client', () => {
         it('place order with portfolio id', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -353,7 +350,7 @@ describe('api-client', () => {
                 portfolio_id: 'XYZ'
             };
 
-            const order = await sut.placeGenericOrder(options);
+            const order = await sut.placeOrder(options);
 
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/orders',
@@ -367,7 +364,7 @@ describe('api-client', () => {
         it('place order with idempotency', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -375,7 +372,7 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options, {
+            const order = await sut.placeOrder(options, {
                 idempotencyKey: 'ABCD'
             });
 
@@ -389,7 +386,7 @@ describe('api-client', () => {
         it('place order for subaccount', async () => {
             mockMakeApiPostRequest.mockResolvedValue(orderDetails);
 
-            const options: GenericOrderByAmountOptions = {
+            const options: OrderByAmountOptions = {
                 metadata: 'clientid:124',
                 notification_config: {
                     url: 'https://www.example.com/callback'
@@ -397,114 +394,13 @@ describe('api-client', () => {
                 amount_kg: 15
             };
 
-            const order = await sut.placeGenericOrder(options, {
+            const order = await sut.placeOrder(options, {
                 subaccountId: 'XYZ'
             });
 
             expect(mockMakeApiPostRequest).toBeCalledWith('/orders', options, {
                 subaccountId: 'XYZ'
             });
-            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
-            expect(order).toEqual(orderDetails);
-        });
-    });
-
-    describe('placeRideOrder', () => {
-        it('place ride order ', async () => {
-            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
-
-            const options: RideOrderOptions = {
-                metadata: 'clientid:124',
-                notification_config: {
-                    url: 'https://www.example.com/callback'
-                },
-                distance_km: 12.2
-            };
-
-            const order = await sut.placeRideOrder(options);
-
-            expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/orders/ride',
-                options,
-                undefined
-            );
-            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
-            expect(order).toEqual(orderDetails);
-        });
-
-        it('place ride order with portfolio id', async () => {
-            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
-
-            const options: RideOrderOptions = {
-                metadata: 'clientid:124',
-                notification_config: {
-                    url: 'https://www.example.com/callback'
-                },
-                distance_km: 12.2,
-                portfolio_id: 'XYZ'
-            };
-
-            const order = await sut.placeRideOrder(options);
-
-            expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/orders/ride',
-                options,
-                undefined
-            );
-            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
-            expect(order).toEqual(orderDetails);
-        });
-
-        it('place ride order with idempotency', async () => {
-            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
-
-            const options: RideOrderOptions = {
-                metadata: 'clientid:124',
-                notification_config: {
-                    url: 'https://www.example.com/callback'
-                },
-                distance_km: 15
-            };
-
-            const order = await sut.placeRideOrder(options, {
-                idempotencyKey: 'ABCD'
-            });
-
-            expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/orders/ride',
-                options,
-                {
-                    idempotencyKey: 'ABCD'
-                }
-            );
-            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
-            expect(order).toEqual(orderDetails);
-        });
-
-        it('place ride order with idempotency and subaccount', async () => {
-            mockMakeApiPostRequest.mockResolvedValue(orderDetails);
-
-            const options: RideOrderOptions = {
-                metadata: 'clientid:124',
-                notification_config: {
-                    url: 'https://www.example.com/callback'
-                },
-                distance_km: 15
-            };
-
-            const order = await sut.placeRideOrder(options, {
-                idempotencyKey: 'ABCD',
-                subaccountId: 'XYZ'
-            });
-
-            expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/orders/ride',
-                options,
-                {
-                    idempotencyKey: 'ABCD',
-                    subaccountId: 'XYZ'
-                }
-            );
             expect(mockMakeApiPostRequest).toBeCalledTimes(1);
             expect(order).toEqual(orderDetails);
         });
@@ -558,51 +454,6 @@ describe('api-client', () => {
             expect(mockMakeApiPostRequest).toBeCalledWith(
                 '/quotes',
                 paramsWithPortfolioId,
-                undefined
-            );
-            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
-            expect(result).toEqual(quote);
-        });
-    });
-
-    describe('getRideQuote', () => {
-        const withVehicleType = (params: RideQuoteParams) =>
-            ({
-                ...params,
-                vehicle_type: 'passenger_car_van_or_suv'
-            } as GroundTransportQuoteParams);
-
-        it('get quote', async () => {
-            mockMakeApiPostRequest.mockResolvedValue(quote);
-
-            const params: RideQuoteParams = {
-                distance_km: 10
-            };
-
-            const result = await sut.getRideQuote(params);
-
-            expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/quotes/ground-transport',
-                withVehicleType(params),
-                undefined
-            );
-            expect(mockMakeApiPostRequest).toBeCalledTimes(1);
-            expect(result).toEqual(quote);
-        });
-
-        it('get quote with portfolio id', async () => {
-            mockMakeApiPostRequest.mockResolvedValue(quote);
-
-            const params: RideQuoteParams = {
-                distance_km: 10,
-                portfolio_id: 'XYZ'
-            };
-
-            const result = await sut.getRideQuote(params);
-
-            expect(mockMakeApiPostRequest).toBeCalledWith(
-                '/quotes/ground-transport',
-                withVehicleType(params),
                 undefined
             );
             expect(mockMakeApiPostRequest).toBeCalledTimes(1);
