@@ -782,6 +782,39 @@ describe('api-client', () => {
         });
     });
 
+    describe('deleteSubaccount', () => {
+        it('delete subaccount', async () => {
+            mockMakeApiDeleteRequest.mockResolvedValue(undefined);
+
+            const subaccountId = 'ABC';
+
+            await sut.deleteSubaccount(subaccountId);
+
+            expect(mockMakeApiDeleteRequest).toBeCalledWith(
+                '/subaccounts/ABC',
+                undefined
+            );
+            expect(mockMakeApiDeleteRequest).toBeCalledTimes(1);
+        });
+
+        it('delete subaccount with request options', async () => {
+            mockMakeApiDeleteRequest.mockResolvedValue(undefined);
+
+            const subaccountId = 'ABC';
+            const requestOptions = {
+                extraRequestOptions: { cache: 'no-store' }
+            };
+
+            await sut.deleteSubaccount(subaccountId, requestOptions);
+
+            expect(mockMakeApiDeleteRequest).toBeCalledWith(
+                '/subaccounts/ABC',
+                requestOptions
+            );
+            expect(mockMakeApiDeleteRequest).toBeCalledTimes(1);
+        });
+    });
+
     describe('getImpactData', () => {
         it('get impact data', async () => {
             mockMakeApiGetRequest.mockResolvedValue(impactData);

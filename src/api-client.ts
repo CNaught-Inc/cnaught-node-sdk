@@ -342,6 +342,23 @@ export class CNaughtApiClient {
         );
 
     /**
+     * See https://docs.cnaught.com/api/reference/subaccounts/delete-subaccount
+     * Deletes the Subaccount with the given id.
+     * This operation will fail if the subaccount has orders associated with it.
+     * @param id ID of the subaccount to delete
+     * @param requestOptions Optional additional request options, for transforming the request before sending
+     * @returns Promise that resolves when the subaccount is successfully deleted
+     */
+    deleteSubaccount = (
+        id: string,
+        requestOptions?: ApiRequestOptions
+    ): Promise<void> =>
+        this.apiHandler.makeApiDeleteRequest<void>(
+            `/subaccounts/${id}`,
+            requestOptions
+        );
+
+    /**
      * See https://docs.cnaught.com/api/reference/#operation/UpdateSubaccountLogoFromURL
      * Update the logo for the subaccount with given id under the user identified by the API key by
      * downloading it from the URL provided in the options.

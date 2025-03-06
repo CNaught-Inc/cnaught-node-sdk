@@ -2,7 +2,7 @@ import { getApiClient } from '../src/client-helper.js';
 import { randomUUID } from 'crypto';
 import * as fs from 'node:fs';
 
-test('Can create, update and retrieve subaccount', async () => {
+test('Can create, update, retrieve, and delete subaccount', async () => {
     const client = getApiClient();
 
     const subaccountName = randomUUID();
@@ -40,6 +40,19 @@ test('Can create, update and retrieve subaccount', async () => {
         updatedSub.default_portfolio_id
     );
     expect(retrievedUpdatedSub.logo_url).not.toEqual(null);
+
+    // Delete the subaccount
+    await client.deleteSubaccount(sub.id);
+
+    // Verify the subaccount has been deleted by checking that an attempt to retrieve it fails
+    try {
+        await client.getSubaccountDetails(sub.id);
+        // If we get here, the test should fail because the subaccount should be deleted
+        fail('Expected getSubaccountDetails to throw an error after deletion');
+    } catch (error) {
+        // We expect an error to be thrown when trying to get a deleted subaccount
+        expect(error).toBeDefined();
+    }
 }, 30000);
 
 test('Can update subaccount logo from url', async () => {
@@ -143,4 +156,36 @@ test('can place and retrieve orders for subaccount', async () => {
     expect(order.subaccount_id).toBe(sub.id);
     expect(retrievedOrders.data.length).toBe(1);
     expect(retrievedOrders.data[0].subaccount_id).toBe(sub.id);
+}, 30000);
+
+// Test that attempting to delete a subaccount with orders fails
+test('Cannot delete a subaccount with orders', async () => {
+    const client = getApiClient();
+
+    // Create a subaccount
+    const sub = await client.createSubaccount({
+        name: randomUUID()
+    });
+
+    // Place an order for the subaccount
+    await client.placeOrder(
+        {
+            amount_kg: 10
+        },
+        {
+            subaccountId: sub.id
+        }
+    );
+
+    // Attempt to delete the subaccount, which should fail
+    try {
+        await client.deleteSubaccount(sub.id);
+        // If we get here, the test should fail because the deletion should have failed
+        fail(
+            'Expected deleteSubaccount to throw an error for subaccount with orders'
+        );
+    } catch (error) {
+        // We expect an error to be thrown when trying to delete a subaccount with orders
+        expect(error).toBeDefined();
+    }
 }, 30000);
