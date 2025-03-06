@@ -13,6 +13,10 @@ test('get portfolio by id', async () => {
         'This portfolio is for sandbox use only and does not represent any real projects'
     );
     expect(portfolio.primary_image_url).toBeNull();
+
+    expect(portfolio.checkout_price_per_kg_usd_cents).toBe(2);
+    expect(portfolio.api_price_per_kg_usd_cents).toBe(2);
+
     expect(portfolio.category_allocations).toHaveLength(4);
 
     portfolio.category_allocations.sort((a, b) =>
