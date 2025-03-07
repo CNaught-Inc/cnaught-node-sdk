@@ -14,5 +14,5 @@ test('get project category by id', async () => {
     );
     expect(projectCategory.projects).toHaveLength(1);
     expect(projectCategory.projects[0].name).toBe('Sandbox Project A');
-    expect(projectCategory.projects[0].type).toBe('Frontier');
+    expect(projectCategory.projects[0].type).toBe('Reforestation');
 }, 30000);

@@ -28,6 +28,18 @@ test('Fulfilled order', async () => {
         'Sandbox Project A'
     );
     expect(orderDetails.project_allocations[0].amount_kg).toBe(1050);
+    expect(orderDetails.project_allocations[0].project.name).toBe(
+        'Sandbox Project A'
+    );
+    expect(orderDetails.project_allocations[0].project.developer).toEqual('Sandbox Project Developer');
+    expect(orderDetails.project_allocations[0].project.location_name).toEqual('Pacific Northwest, USA');
+    expect(orderDetails.project_allocations[0].project.summary).toEqual('Sandbox Project A is a reforestation initiative in the Pacific Northwest.');
+    expect(orderDetails.project_allocations[0].project.description).toEqual(
+        'This project focuses on restoring native forest ecosystems through sustainable planting practices and community engagement.'
+    );
+    expect(orderDetails.project_allocations[0].project.primary_image_url).toMatch(
+        /^https:\/\/assets\.cnaught\.com\//
+    );
     expect(orderDetails.project_allocations[1].project.name).toBe(
         'Sandbox Project B'
     );
@@ -40,16 +52,4 @@ test('Fulfilled order', async () => {
         'Sandbox Project D'
     );
     expect(orderDetails.project_allocations[3].amount_kg).toBe(300);
-    orderDetails.project_allocations.forEach((pa) => {
-        expect(pa.project.name).toMatch(/^Sandbox Project/);
-        expect(pa.project.developer).toEqual('Sandbox Project Developer');
-        expect(pa.project.location_name).toEqual('Net Zero, Future');
-        expect(pa.project.summary).toEqual('Not a real project');
-        expect(pa.project.description).toEqual(
-            'This is a sandbox project, not a real project.'
-        );
-        expect(pa.project.primary_image_url).toMatch(
-            /^https:\/\/assets\.cnaught\.com\//
-        );
-    });
 }, 30000);

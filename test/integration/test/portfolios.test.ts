@@ -13,6 +13,10 @@ test('get portfolio by id', async () => {
         'This portfolio is for sandbox use only and does not represent any real projects'
     );
     expect(portfolio.primary_image_url).toBeNull();
+
+    expect(portfolio.checkout_price_per_kg_usd_cents).toBe(2);
+    expect(portfolio.api_price_per_kg_usd_cents).toBe(2);
+
     expect(portfolio.category_allocations).toHaveLength(4);
 
     portfolio.category_allocations.sort((a, b) =>
@@ -33,7 +37,7 @@ test('get portfolio by id', async () => {
         'Sandbox Project A'
     );
     expect(portfolio.category_allocations[0].category.projects[0].type).toBe(
-        'Frontier'
+        'Reforestation'
     );
     expect(portfolio.category_allocations[1].category.name).toBe(
         'Sandbox Project Category B'

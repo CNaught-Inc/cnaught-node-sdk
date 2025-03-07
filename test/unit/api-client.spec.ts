@@ -167,6 +167,8 @@ describe('api-client', () => {
         summary: 'Some summary',
         description: 'Some description',
         primary_image_url: 'http://example.org/image',
+        checkout_price_per_kg_usd_cents: 2,
+        api_price_per_kg_usd_cents: 2.5,
         category_allocations: [
             {
                 category: projectCategoryDetails,
