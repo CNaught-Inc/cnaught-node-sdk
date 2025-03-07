@@ -13,7 +13,7 @@ import type {
     Subaccount,
     ImpactData,
     ImpactHostedPageConfig,
-    Project,
+    ProjectWithCreditIssuances,
     ProjectCategoryWithProjects,
     Portfolio,
     PortfolioWithCategoryAllocations,
@@ -519,13 +519,13 @@ export class CNaughtApiClient {
      * Get details for a project
      * @param id Id of the project whose details are to be retrieved
      * @param requestOptions Optional additional request options, e.g. for transforming the Request before sending
-     * @returns Project details
+     * @returns Project details with credit issuances
      */
     getProjectDetails = (
         id: string,
         requestOptions?: ApiRequestOptions
-    ): Promise<Project> =>
-        this.apiHandler.makeApiGetRequest<Project>(
+    ): Promise<ProjectWithCreditIssuances> =>
+        this.apiHandler.makeApiGetRequest<ProjectWithCreditIssuances>(
             `/projects/${id}`,
             requestOptions
         );
