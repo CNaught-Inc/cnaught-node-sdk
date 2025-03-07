@@ -256,4 +256,60 @@ describe('api-client', () => {
             }
         });
     });
+
+    describe('makeApiDeleteRequest', () => {
+        it('composes url and returns JSON response', async () => {
+            const fakeResponse = {
+                data: 'XYZ'
+            };
+            fetchMock.mockOnce(JSON.stringify(fakeResponse));
+
+            const res = await sut.makeApiDeleteRequest<typeof fakeResponse>(
+                '/somepath'
+            );
+
+            expect(res).toEqual(fakeResponse);
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][0]).toEqual(
+                'https://example.com/somepath'
+            );
+            expect(fetchMock.mock.calls[0][1]?.method).toEqual('DELETE');
+        });
+
+        it('handles 204 No Content response', async () => {
+            // Create a mock Response object with status 204
+            const mockResponse = new Response(null, { status: 204 });
+            // Use mockImplementationOnce to return our custom response
+            fetchMock.mockImplementationOnce(() =>
+                Promise.resolve(mockResponse)
+            );
+
+            const res = await sut.makeApiDeleteRequest<any>('/somepath');
+
+            expect(res).toBeUndefined();
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][0]).toEqual(
+                'https://example.com/somepath'
+            );
+            expect(fetchMock.mock.calls[0][1]?.method).toEqual('DELETE');
+        });
+
+        it('sets headers from request options', async () => {
+            const fakeResponse = { success: true };
+            fetchMock.mockOnce(JSON.stringify(fakeResponse));
+
+            const requestOptions = {
+                headers: { 'X-Custom-Header': 'test-value' }
+            };
+
+            await sut.makeApiDeleteRequest('/somepath', requestOptions);
+
+            expect(fetchMock.mock.calls.length).toEqual(1);
+            expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({
+                'X-Custom-Header': 'test-value',
+                Authorization: 'Bearer TESTKEY',
+                'User-Agent': `CNaught-NodeSDK/${version}`
+            });
+        });
+    });
 });

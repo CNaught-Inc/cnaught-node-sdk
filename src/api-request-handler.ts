@@ -120,7 +120,14 @@ export class ApiRequestHandler {
                 ...requestOptions?.extraRequestOptions
             })
             .delete(url)
-            .json<Response>();
+            .res(async (response) => {
+                // Handle 204 No Content responses
+                if (response.status === 204) {
+                    return undefined as unknown as Response;
+                }
+                // For other status codes, parse as JSON
+                return (await response.json()) as Response;
+            });
 
     private getHeaders(
         hasData: boolean,
