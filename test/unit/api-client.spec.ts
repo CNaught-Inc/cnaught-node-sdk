@@ -148,7 +148,30 @@ describe('api-client', () => {
         name: 'Some project',
         type: 'ARR',
         un_sdg_goals: [],
-        developer: 'Test Developer'
+        developer: 'Test Developer',
+        activity_types: ['Test Activity'],
+        summary: 'Test Summary',
+        description: 'Test Description',
+        verifier: 'Test Verifier',
+        lifetime: {
+            start_year: 2021,
+            end_year: 2024
+        },
+        impact_type: 'Avoided Emissions',
+        beyond_carbon: 'Test Beyond Carbon',
+        due_diligence: 'Test Due Diligence',
+        location_name: 'Test Location',
+        methodology: 'Test Methodology',
+        permanence: 'Test Permanence',
+        news_articles: [
+            {
+                title: 'Test title',
+                url: 'https://example.com',
+                author: 'Test Author',
+                published_on: '2022-08-05T24:00:00.29Z',
+                cnaught_take: 'Our take'
+            }
+        ]
     };
 
     const projectCategoryId = 'project-category-id';
