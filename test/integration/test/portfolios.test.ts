@@ -37,7 +37,7 @@ test('get portfolio by id', async () => {
         'Sandbox Project A'
     );
     expect(portfolio.category_allocations[0].category.projects[0].type).toBe(
-        'Frontier'
+        'Reforestation'
     );
     expect(portfolio.category_allocations[1].category.name).toBe(
         'Sandbox Project Category B'
