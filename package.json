@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "http-problem-details-parser": "^0.0.2",
-    "wretch": "^2.7.0"
+    "wretch": "^3.0.9"
   },
   "devDependencies": {
     "@types/jest": "^23.3.13",
